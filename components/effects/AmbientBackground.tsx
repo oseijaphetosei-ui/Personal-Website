@@ -2,135 +2,144 @@
 
 import { useEffect, useRef } from "react";
 
-// ── Vertex: full-screen passthrough quad ─────────────────────────────────────
 const VERT = `
 attribute vec2 a_pos;
-void main() {
-  gl_Position = vec4(a_pos, 0.0, 1.0);
-}
+void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
 `;
 
-// ── Fragment: flowing organic color fields ────────────────────────────────────
-// Technique: two-pass domain warp (Inigo Quilez style) drives a set of large
-// Gaussian blobs through an organic, non-repeating motion field.
-// Mouse position perturbs the warp, creating the "liquid being pushed" feel.
+// ─────────────────────────────────────────────────────────────────────────────
+// Fluid ambient shader
+//
+// Architecture:
+//   1. Divergence-free curl-noise velocity field (two scales)
+//   2. Semi-Lagrangian backward advection (3 × RK2 steps)
+//   3. Sample IQ cosine palette at the advected source position
+//   4. Saturation boost — colors are rendered at full intensity in WebGL;
+//      the translucency and diffusion come entirely from CSS (opacity + blur).
+//
+// Mouse: vortex rotation + directional push, both decay via u_mstr.
+// Scroll: u_inten fades the field toward white in lower sections.
+// ─────────────────────────────────────────────────────────────────────────────
 const FRAG = `
 precision highp float;
 
 uniform float u_time;
 uniform vec2  u_res;
-uniform vec2  u_mouse;
-uniform float u_intensity;
+uniform vec2  u_mouse;   // [0,1]x[0,1], y=0 at bottom
+uniform vec2  u_mvel;    // mouse velocity, norm-viewport / sec
+uniform float u_mstr;    // mouse energy [0,1]
+uniform float u_inten;   // scroll intensity 1→0.25
 
-const vec3 BASE   = vec3(0.973, 0.980, 0.996);
-const vec3 SKY    = vec3(0.741, 0.898, 0.992);
-const vec3 CYAN   = vec3(0.776, 0.957, 0.988);
-const vec3 INDIGO = vec3(0.847, 0.886, 0.996);
-const vec3 LAV    = vec3(0.906, 0.882, 0.996);
-const vec3 DBLUE  = vec3(0.596, 0.761, 0.984);
-const vec3 ELEC   = vec3(0.686, 0.933, 0.984);
+// ─── IQ cosine palette ───────────────────────────────────────────────────────
+// c = (1,1,1) makes it truly periodic: pal(t) = pal(t+1), safe with fract().
+// d = (0.10, 0.45, 0.75) starts the sweep at violet-pink and covers:
+//     violet → indigo → electric blue → cyan → emerald → lime → gold → orange → ruby → violet
+vec3 pal(float t) {
+  return vec3(0.5) + vec3(0.5) * cos(6.28318 * (t + vec3(0.10, 0.45, 0.75)));
+}
 
-float hash(vec2 p) {
-  p = fract(p * vec2(234.34, 435.345));
-  p += dot(p, p + 34.23);
+// ─── Value noise + fBm ───────────────────────────────────────────────────────
+float _h(vec2 p) {
+  p = fract(p * vec2(127.1, 311.7));
+  p += dot(p, p + 45.32);
   return fract(p.x * p.y);
 }
-
-float sn(vec2 p) {
+float vn(vec2 p) {
   vec2 i = floor(p), f = fract(p);
   f = f * f * (3.0 - 2.0 * f);
-  return mix(
-    mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
-    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
-    f.y
-  );
+  return mix(mix(_h(i), _h(i+vec2(1.,0.)), f.x),
+             mix(_h(i+vec2(0.,1.)), _h(i+vec2(1.,1.)), f.x), f.y);
 }
-
 float fbm(vec2 p) {
-  float v = 0.0, a = 0.5;
-  mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
-  for (int i = 0; i < 4; i++) {
-    v += a * sn(p);
-    p = m * p;
-    a *= 0.5;
-  }
+  float v=0.0, a=0.5;
+  mat2 m = mat2(1.6,1.2,-1.2,1.6);
+  v+=a*vn(p); p=m*p; a*=0.5;
+  v+=a*vn(p); p=m*p; a*=0.5;
+  v+=a*vn(p);
   return v;
 }
 
-float blob(vec2 uv, vec2 c, float r) {
-  float d = length(uv - c) / r;
-  return exp(-d * d * 2.0);
+// ─── Curl-noise velocity (divergence-free by construction) ───────────────────
+// v = (∂φ/∂y, −∂φ/∂x), where φ = fbm(scaled_p + time_drift)
+// Two scales: large slow flow + small faster turbulence.
+vec2 flowAt(vec2 p, float t) {
+  const float E = 0.005;
+
+  vec2 d1 = t * vec2(0.068, 0.044);
+  float f0=fbm(p*0.80+d1), fx=fbm(p*0.80+d1+vec2(E,0.)), fy=fbm(p*0.80+d1+vec2(0.,E));
+  vec2 c1 = vec2(fy-f0, -(fx-f0)) / E;
+
+  vec2 d2 = t * vec2(0.122, 0.085) + vec2(4.3, 2.1);
+  float g0=fbm(p*1.65+d2), gx=fbm(p*1.65+d2+vec2(E,0.)), gy=fbm(p*1.65+d2+vec2(0.,E));
+  vec2 c2 = vec2(gy-g0, -(gx-g0)) / E;
+
+  return c1*0.45 + c2*0.18;
+}
+
+// ─── Mouse force ─────────────────────────────────────────────────────────────
+// Vortex: rotational swirl around cursor (peaks ~0.12 units away).
+// Push: directional force aligned with mouse velocity.
+vec2 mouseForce(vec2 p, vec2 mo, vec2 mv, float ms) {
+  vec2  d  = p - mo;
+  float r2 = dot(d,d) + 0.0005;
+  float r  = sqrt(r2);
+  vec2 vortex = vec2(-d.y, d.x) * (ms * 0.0065 * r / (r2 + 0.018));
+  float spd   = min(length(mv), 2.0);
+  vec2  push  = (spd > 0.005 ? normalize(mv) : vec2(0.)) * spd * exp(-r2*10.0) * ms * 0.09;
+  return vortex + push;
+}
+
+// ─── Color field ─────────────────────────────────────────────────────────────
+// Sampled at the advected source position — static fbm patches that look like
+// they're streaming because advection moves the sampling point through them.
+vec3 colorAt(vec2 pos) {
+  float n1 = fbm(pos * 0.95);
+  float n2 = fbm(pos * 0.72 + vec2(3.4, 1.9));
+  float n3 = fbm(pos * 1.55 + vec2(7.1, 4.2));
+  float n4 = fbm(pos * 0.50 + vec2(1.3, 8.6)); // extra low-freq layer for large blobs
+
+  // Combine layers; fract wraps smoothly (palette is periodic, no seams)
+  float t = fract(n1 * 1.5 + n2 * 0.65 + n3 * 0.22 + n4 * 0.35);
+
+  // Add local frequency detail for iridescence — makes adjacent points vary in hue
+  float detail = fbm(pos * 3.5 + vec2(n1*2.0, n2*2.0)) * 0.08;
+  t = fract(t + detail);
+
+  vec3 col = pal(t);
+
+  // Saturation boost: the shader renders at full vividness.
+  // CSS opacity (0.28) and CSS blur (70-80px) handle the translucency + diffusion.
+  float lum = dot(col, vec3(0.299, 0.587, 0.114));
+  col = vec3(lum) + 2.0 * (col - vec3(lum));
+  return clamp(col, 0.0, 1.0);
 }
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / u_res;
+  vec2 uv  = gl_FragCoord.xy / u_res;
   float ar = u_res.x / u_res.y;
   vec2 p   = vec2(uv.x * ar, uv.y);
-  float t  = u_time * 0.055;
+  float t  = u_time;
+  vec2 mo  = vec2(u_mouse.x * ar, u_mouse.y);
+  vec2 mv  = vec2(u_mvel.x  * ar, u_mvel.y);
 
-  vec2 mouse = vec2(u_mouse.x * ar, u_mouse.y);
+  // Semi-Lagrangian backward advection — 3 steps × RK2 midpoint.
+  // Each step traces backward by DT units along the flow field.
+  const float DT = 0.28, HD = 0.14;
+  vec2 pos=p, v0, pm;
 
-  // Pass 1: compute warp field q
-  vec2 q = vec2(
-    fbm(p + t * 0.35),
-    fbm(p + vec2(5.2, 1.3) + t * 0.30)
-  );
-  // Pass 2: warp with q to get richer, non-repeating distortion
-  vec2 r = vec2(
-    fbm(p + q + vec2(1.7, 9.2) + t * 0.18),
-    fbm(p + q + vec2(8.3, 2.8) + t * 0.22)
-  );
-  vec2 wp = p + vec2(r.x - 0.5, r.y - 0.5) * 0.20;
+  v0=flowAt(pos,t)+mouseForce(pos,mo,mv,u_mstr); pm=pos-v0*HD;
+  pos=pos-(flowAt(pm,t)+mouseForce(pm,mo,mv,u_mstr))*DT;
 
-  // Cursor deformation: colors drift toward mouse position
-  vec2 toMouse = mouse - p;
-  float md = length(toMouse);
-  float ms = exp(-md * md * 2.5);
-  wp += toMouse * ms * 0.08;
+  v0=flowAt(pos,t)+mouseForce(pos,mo,mv,u_mstr); pm=pos-v0*HD;
+  pos=pos-(flowAt(pm,t)+mouseForce(pm,mo,mv,u_mstr))*DT;
 
-  // Five large blobs drifting in slow independent orbits
-  vec2 b1 = vec2((0.22 + 0.18 * sin(t * 0.70)) * ar,        0.30 + 0.17 * cos(t * 0.50));
-  vec2 b2 = vec2((0.72 + 0.14 * cos(t * 0.60 + 1.1)) * ar,  0.70 + 0.13 * sin(t * 0.80 + 0.4));
-  vec2 b3 = vec2((0.50 + 0.22 * sin(t * 0.45 + 2.3)) * ar,  0.48 + 0.19 * cos(t * 0.65 + 1.2));
-  vec2 b4 = vec2((0.85 + 0.10 * cos(t * 0.85 + 0.8)) * ar,  0.22 + 0.17 * sin(t * 0.55 + 2.1));
-  vec2 b5 = vec2((0.15 + 0.12 * sin(t * 0.50 + 1.7)) * ar,  0.77 + 0.13 * cos(t * 0.75 + 0.6));
+  v0=flowAt(pos,t)+mouseForce(pos,mo,mv,u_mstr); pm=pos-v0*HD;
+  pos=pos-(flowAt(pm,t)+mouseForce(pm,mo,mv,u_mstr))*DT;
 
-  float rb = 0.44 * ar;
+  vec3 col = colorAt(pos);
 
-  float f1 = blob(wp, b1, rb * 1.20);
-  float f2 = blob(wp, b2, rb * 1.05);
-  float f3 = blob(wp, b3, rb * 1.50);
-  float f4 = blob(wp, b4, rb * 0.85);
-  float f5 = blob(wp, b5, rb * 0.90);
-
-  // Three very large unwarped blobs for a slow background wash (adds depth)
-  float bg1 = blob(p, vec2(0.38 * ar, 0.52), rb * 2.2);
-  float bg2 = blob(p, vec2(0.78 * ar, 0.32), rb * 1.9);
-  float bg3 = blob(p, vec2(0.55 * ar, 0.85), rb * 1.7);
-
-  vec3 col = BASE;
-
-  // Background wash — ultra-soft, large-scale tint
-  col = mix(col, INDIGO, bg1 * 0.14);
-  col = mix(col, SKY,    bg2 * 0.12);
-  col = mix(col, LAV,    bg3 * 0.10);
-
-  // Main warped blobs
-  col = mix(col, SKY,    f1 * 0.62);
-  col = mix(col, ELEC,   f2 * 0.52);
-  col = mix(col, INDIGO, f3 * 0.48);
-  col = mix(col, DBLUE,  f4 * 0.45);
-  col = mix(col, LAV,    f5 * 0.52);
-
-  // Richer color where blobs overlap
-  col = mix(col, CYAN,  clamp(f1 * f3 * 1.5, 0.0, 1.0) * 0.55);
-  col = mix(col, SKY,   clamp(f2 * f5 * 1.5, 0.0, 1.0) * 0.40);
-
-  // Subtle atmospheric glow near cursor
-  col = mix(col, DBLUE, ms * 0.09);
-
-  // Scroll intensity: blend toward BASE as user scrolls down
-  col = mix(BASE, col, u_intensity);
+  // Fade toward white as user scrolls (preserves readability)
+  col = mix(vec3(1.0), col, u_inten);
 
   gl_FragColor = vec4(col, 1.0);
 }
@@ -140,73 +149,62 @@ export function AmbientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // Respect system-level reduced-motion preference
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Responsive blur radius: larger viewport benefits from more diffusion
+    const isMobile = window.innerWidth < 768;
+    canvas.style.filter = `blur(${isMobile ? 48 : 78}px)`;
+
     const gl = canvas.getContext("webgl", {
-      alpha: false,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      preserveDrawingBuffer: false,
+      alpha: false, antialias: false, depth: false,
+      stencil: false, preserveDrawingBuffer: false,
       powerPreference: "high-performance",
     }) as WebGLRenderingContext | null;
     if (!gl) return;
 
-    const compile = (type: number, src: string): WebGLShader => {
-      const s = gl.createShader(type)!;
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      if (process.env.NODE_ENV !== "production" && !gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-        console.warn("[AmbientBg] shader compile error:", gl.getShaderInfoLog(s));
-      }
+    function compile(type: number, src: string) {
+      const s = gl!.createShader(type)!;
+      gl!.shaderSource(s, src); gl!.compileShader(s);
+      if (process.env.NODE_ENV !== "production" && !gl!.getShaderParameter(s, gl!.COMPILE_STATUS))
+        console.warn("[AmbientBg]", gl!.getShaderInfoLog(s));
       return s;
-    };
-
+    }
     const prog = gl.createProgram()!;
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
     gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn("[AmbientBg] link error:", gl.getProgramInfoLog(prog));
-      }
+      if (process.env.NODE_ENV !== "production")
+        console.warn("[AmbientBg] link:", gl.getProgramInfoLog(prog));
       return;
     }
     gl.useProgram(prog);
 
-    // Full-screen triangle strip: two tris covering clip space [-1,1]²
     const quad = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      gl.STATIC_DRAW
-    );
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
     const posLoc = gl.getAttribLocation(prog, "a_pos");
     gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-    const uTime      = gl.getUniformLocation(prog, "u_time");
-    const uRes       = gl.getUniformLocation(prog, "u_res");
-    const uMouse     = gl.getUniformLocation(prog, "u_mouse");
-    const uIntensity = gl.getUniformLocation(prog, "u_intensity");
+    const uTime  = gl.getUniformLocation(prog, "u_time");
+    const uRes   = gl.getUniformLocation(prog, "u_res");
+    const uMouse = gl.getUniformLocation(prog, "u_mouse");
+    const uMvel  = gl.getUniformLocation(prog, "u_mvel");
+    const uMstr  = gl.getUniformLocation(prog, "u_mstr");
+    const uInten = gl.getUniformLocation(prog, "u_inten");
 
     let rafId = 0;
-    const startTime = performance.now();
-    const mouseTarget = { x: 0.5, y: 0.5 };
-    const mouseSmooth = { x: 0.5, y: 0.5 };
-    let intensityTarget = 1.0;
-    let intensity = 1.0;
+    const t0 = performance.now();
+    // Mobile: half-resolution canvas (CSS scales it up — invisible for a blurry effect)
+    const scale = isMobile ? 0.5 : 1.0;
 
     const resize = () => {
-      const w = canvas.clientWidth || window.innerWidth;
-      const h = canvas.clientHeight || window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
+      const w = Math.max(1, Math.round((canvas.clientWidth  || window.innerWidth)  * scale));
+      const h = Math.max(1, Math.round((canvas.clientHeight || window.innerHeight) * scale));
+      canvas.width = w; canvas.height = h;
       gl.viewport(0, 0, w, h);
       gl.uniform2f(uRes, w, h);
     };
@@ -214,29 +212,55 @@ export function AmbientBackground() {
     ro.observe(canvas);
     resize();
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseTarget.x = e.clientX / window.innerWidth;
-      mouseTarget.y = 1.0 - e.clientY / window.innerHeight; // flip Y: GL origin is bottom-left
-    };
-    window.addEventListener("mousemove", onMouseMove);
+    // ── Mouse tracking ────────────────────────────────────────────────────────
+    const mTarget = { x: 0.5, y: 0.5 };
+    const mSmooth = { x: 0.5, y: 0.5 };
+    const mVel    = { x: 0.0, y: 0.0 };
+    let   mStr    = 0.0;
+    let prevRx    = 0.5, prevRy = 0.5;
 
+    const onMove = (e: MouseEvent) => {
+      const rx = e.clientX / window.innerWidth;
+      const ry = 1.0 - e.clientY / window.innerHeight; // flip Y for GL (0 = bottom)
+      const dvx = (rx - prevRx) * 60; // scale to approx units/sec at 60fps events
+      const dvy = (ry - prevRy) * 60;
+      prevRx = rx; prevRy = ry;
+      // Exponentially smooth velocity to remove jitter
+      mVel.x = mVel.x * 0.55 + dvx * 0.45;
+      mVel.y = mVel.y * 0.55 + dvy * 0.45;
+      mTarget.x = rx; mTarget.y = ry;
+      // Accumulate mouse energy proportional to speed
+      mStr = Math.min(1.0, mStr + Math.hypot(dvx, dvy) * 0.042);
+    };
+    window.addEventListener("mousemove", onMove);
+
+    // ── Scroll intensity ──────────────────────────────────────────────────────
+    let intenTarget = 1.0, inten = 1.0;
     const onScroll = () => {
       const vh = window.innerHeight;
-      const t = Math.max(0, Math.min(1, (window.scrollY - vh * 0.5) / (vh * 1.0)));
-      intensityTarget = 1.0 - t * 0.75; // 1.0 (hero) → 0.25 (lower sections)
+      const f = Math.max(0, Math.min(1, (window.scrollY - vh * 0.5) / vh));
+      intenTarget = 1.0 - f * 0.75;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
+    // ── Render loop ───────────────────────────────────────────────────────────
     const render = () => {
       rafId = requestAnimationFrame(render);
-      // Frame-rate-independent lerp for mouse (decayRate ≈ 5 → settles in ~0.6s)
-      mouseSmooth.x += (mouseTarget.x - mouseSmooth.x) * 0.035;
-      mouseSmooth.y += (mouseTarget.y - mouseSmooth.y) * 0.035;
-      intensity += (intensityTarget - intensity) * 0.04;
 
-      gl.uniform1f(uTime, (performance.now() - startTime) / 1000);
-      gl.uniform2f(uMouse, mouseSmooth.x, mouseSmooth.y);
-      gl.uniform1f(uIntensity, intensity);
+      // Smooth mouse follow (slightly delayed for organic feel)
+      mSmooth.x += (mTarget.x - mSmooth.x) * 0.055;
+      mSmooth.y += (mTarget.y - mSmooth.y) * 0.055;
+      // Inertia: velocity and energy decay naturally
+      mVel.x  *= 0.91;
+      mVel.y  *= 0.91;
+      mStr    *= 0.983;
+      inten   += (intenTarget - inten) * 0.04;
+
+      gl.uniform1f(uTime,  (performance.now() - t0) / 1000);
+      gl.uniform2f(uMouse, mSmooth.x, mSmooth.y);
+      gl.uniform2f(uMvel,  mVel.x,    mVel.y);
+      gl.uniform1f(uMstr,  mStr);
+      gl.uniform1f(uInten, inten);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
     render();
@@ -244,7 +268,7 @@ export function AmbientBackground() {
     return () => {
       cancelAnimationFrame(rafId);
       ro.disconnect();
-      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousemove", onMove);
       window.removeEventListener("scroll", onScroll);
       gl.deleteProgram(prog);
       gl.deleteBuffer(quad);
@@ -255,15 +279,21 @@ export function AmbientBackground() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="fixed inset-0 pointer-events-none dark:opacity-0 transition-opacity duration-500"
+      // opacity-[0.28]: Tailwind arbitrary value — specificity (0,1,0)
+      // dark:opacity-0: specificity (0,2,0) because of the .dark parent selector — wins
+      // transition-opacity: smooth theme-switch animation
+      className="fixed inset-0 pointer-events-none opacity-[0.28] dark:opacity-0 transition-opacity duration-500"
       style={{
         zIndex: 0,
         width: "100%",
         height: "100%",
-        // Instant CSS gradient fallback — shown before WebGL initialises
-        // or on devices/browsers that don't support WebGL
+        // filter set by JS after mount (responsive blur radius).
+        // This default is replaced in useEffect — present here for the first frame.
+        filter: "blur(78px)",
+        // Static gradient shown on the first frame before WebGL fires,
+        // and as a permanent fallback if WebGL is unavailable.
         background:
-          "linear-gradient(135deg, #f0f9ff 0%, #ede9fe 35%, #f0f4ff 65%, #ecfeff 100%)",
+          "linear-gradient(135deg,#edd6ff 0%,#d0d4ff 22%,#c2eeff 44%,#c8ffea 66%,#fef9d0 88%,#ffd6f0 100%)",
       }}
     />
   );

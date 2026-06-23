@@ -10,6 +10,7 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AmbientBackground } from "@/components/effects/AmbientBackground";
+import { StarBackground } from "@/components/effects/StarBackground";
 import { ScrollProgress } from "@/components/effects/ScrollProgress";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
       <CustomCursor />
       <ScrollProgress />
       <AmbientBackground />
+      <StarBackground />
       <Nav />
       <main>
         <Hero />
