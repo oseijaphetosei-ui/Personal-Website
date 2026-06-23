@@ -100,7 +100,7 @@ export function Hero() {
       className="relative min-h-[100dvh] flex flex-col overflow-x-hidden"
     >
       {/* Background dot grid */}
-      <div className="absolute inset-0 dot-grid opacity-[0.5] dark:opacity-[0.8]" />
+      <div className="absolute inset-0 dot-grid opacity-0 dark:opacity-[0.8]" />
 
       {/* Ambient gradient blobs */}
       <motion.div
