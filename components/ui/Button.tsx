@@ -67,6 +67,15 @@ export function Button({
   );
 
   if (href) {
+    // Plain <a> for protocol links — no framework routing, guaranteed browser-native behavior
+    if (href.startsWith("mailto:") || href.startsWith("tel:")) {
+      return (
+        <a href={href} className={classes}>
+          {content}
+        </a>
+      );
+    }
+
     return (
       <motion.a
         href={href}

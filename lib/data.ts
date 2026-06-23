@@ -6,15 +6,15 @@ export const siteConfig = {
   tagline: "Building intelligent products that matter.",
   description:
     "CS & Data Science student at Pomona College. I build AI-powered products across web, mobile, and data — driven by a passion for real-world impact.",
-  email: "oseijaphetosei@gmail.com",
+  email: "jotk2024@mymail.pomona.edu",
   phone: "+1 (840) 205-7727",
   location: "Claremont, California",
   availableFor: "Summer 2027",
   social: {
-    github: "https://github.com/Japhet795",
-    linkedin: "https://linkedin.com/in/osei-japhet-acquah",
+    github: "https://github.com/oseijaphetosei-ui",
+    linkedin: "https://www.linkedin.com/in/japhetacquh795/",
   },
-  resume: "/resume.pdf",
+  resume: "/Osei_Acquah_Resume.docx",
 };
 
 export const roles = [

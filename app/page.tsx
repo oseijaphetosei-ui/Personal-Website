@@ -9,11 +9,15 @@ import { Leadership } from "@/components/sections/Leadership";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { ParticleBackground } from "@/components/effects/ParticleBackground";
+import { ScrollProgress } from "@/components/effects/ScrollProgress";
 
 export default function Home() {
   return (
     <>
       <CustomCursor />
+      <ScrollProgress />
+      <ParticleBackground />
       <Nav />
       <main>
         <Hero />
