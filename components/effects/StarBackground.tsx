@@ -6,12 +6,12 @@ import { useEffect, useRef } from "react";
 // Parallax emerges from different drift speeds per layer.
 // Each layer has its own size range, opacity range, and drift speed range.
 const LAYERS = [
-  // Layer 0 — Distant: tiny, faint, barely moving
-  { count: 130, rMin: 0.25, rMax: 0.62, opMin: 0.10, opMax: 0.28, sMin: 0.18, sMax: 0.42 },
-  // Layer 1 — Mid: clearly visible, moderate drift
-  { count:  65, rMin: 0.62, rMax: 1.28, opMin: 0.20, opMax: 0.52, sMin: 0.36, sMax: 0.70 },
-  // Layer 2 — Close: larger, brighter, most movement
-  { count:  18, rMin: 1.25, rMax: 2.05, opMin: 0.28, opMax: 0.66, sMin: 0.52, sMax: 1.00 },
+  // Layer 0 — Distant: small, visibly drifting slowly
+  { count: 130, rMin: 0.25, rMax: 0.65, opMin: 0.15, opMax: 0.35, sMin:  8, sMax:  22 },
+  // Layer 1 — Mid: clearly moving across the screen
+  { count:  65, rMin: 0.65, rMax: 1.30, opMin: 0.22, opMax: 0.55, sMin: 28, sMax:  55 },
+  // Layer 2 — Close: large, obviously moving, strong parallax
+  { count:  18, rMin: 1.30, rMax: 2.10, opMin: 0.32, opMax: 0.72, sMin: 62, sMax: 105 },
 ] as const;
 
 // Star: all fields derived at module load, never mutated.
@@ -39,12 +39,12 @@ for (let li = 0; li < LAYERS.length; li++) {
     const o0 = L.opMin + Math.random() * (L.opMax - L.opMin);
     ALL_STARS.push({
       nx: Math.random(), ny: Math.random(),
-      // Size wave: 12–32% of base radius, period 5–16 s
-      r0, rA: r0 * (0.12 + Math.random() * 0.20),
-      rF: 0.06 + Math.random() * 0.14, rP: Math.random() * TAU,
-      // Brightness wave: 20–50% of base opacity, period 4–13 s
-      o0, oA: o0 * (0.20 + Math.random() * 0.30),
-      oF: 0.08 + Math.random() * 0.20, oP: Math.random() * TAU,
+      // Size wave: 45–100% of base radius, period 2–5 s — visibly pulsing
+      r0, rA: r0 * (0.45 + Math.random() * 0.55),
+      rF: 0.20 + Math.random() * 0.30, rP: Math.random() * TAU,
+      // Brightness wave: 35–70% of base opacity, period 2.5–5.5 s
+      o0, oA: o0 * (0.35 + Math.random() * 0.35),
+      oF: 0.18 + Math.random() * 0.28, oP: Math.random() * TAU,
       // Random drift direction; speed varies by layer
       da: Math.random() * TAU,
       ds: L.sMin + Math.random() * (L.sMax - L.sMin),
@@ -123,7 +123,7 @@ export function StarBackground() {
         if (py[i] > H + 4) py[i] = -4;
 
         // ── Animated radius and opacity ───────────────────────────────────────
-        const r  = Math.max(0.1, s.r0 + s.rA * Math.sin(t * s.rF * TAU + s.rP));
+        const r  = Math.max(0.18, s.r0 + s.rA * Math.sin(t * s.rF * TAU + s.rP));
         const op = Math.max(0,   s.o0 + s.oA * Math.sin(t * s.oF * TAU + s.oP));
 
         // ── Soft glow halo (mid and close layers only) ────────────────────────
