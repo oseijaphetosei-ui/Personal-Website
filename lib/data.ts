@@ -6,7 +6,7 @@ export const siteConfig = {
   tagline: "Building intelligent products that matter.",
   description:
     "CS & Data Science student at Pomona College. I build AI-powered products across web, mobile, and data — driven by a passion for real-world impact.",
-  email: "jotk2024@mymail.pomona.edu",
+  email: "oseijaphetosei@gmail.com",
   phone: "+1 (840) 205-7727",
   location: "Claremont, California",
   availableFor: "Summer 2027",

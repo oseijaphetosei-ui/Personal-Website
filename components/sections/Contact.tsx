@@ -79,18 +79,22 @@ export function Contact() {
         variants={staggerContainer}
         className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto"
       >
-        {/* Email card — plain <a> for guaranteed mailto behavior + copy fallback */}
-        <motion.div variants={fadeUp} className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface border border-border transition-all duration-200 hover:shadow-sm hover:border-accent-emerald/30">
+        {/* Email card */}
+        <motion.div
+          variants={fadeUp}
+          className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface border border-border transition-all duration-200 hover:shadow-sm hover:border-accent-emerald/30"
+          whileHover={{ y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        >
           <div className="flex items-center justify-between">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald">
               <Mail size={16} />
             </div>
             <a
               href={`mailto:${siteConfig.email}`}
-              className="text-text-secondary/30 hover:text-text-secondary/70 transition-colors"
               aria-label="Open email client"
             >
-              <ArrowUpRight size={14} />
+              <ArrowUpRight size={14} className="text-text-secondary/30 group-hover:text-text-secondary/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </a>
           </div>
           <div>
