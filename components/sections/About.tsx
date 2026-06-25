@@ -35,7 +35,7 @@ export function About() {
             {/* Photo frame */}
             <div className="relative w-64 h-72 sm:w-72 sm:h-80 lg:w-64 lg:h-72 rounded-2xl bg-surface-alt border border-border overflow-hidden">
               <Image
-                src="/profile_picture.jpg"
+                src="/profile.jpeg"
                 alt="Osei Japhet Acquah"
                 fill
                 className="object-cover object-top"
