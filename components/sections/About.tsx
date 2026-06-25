@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, BookOpen, Code2, Globe2 } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
@@ -33,21 +34,18 @@ export function About() {
 
             {/* Photo frame */}
             <div className="relative w-64 h-72 sm:w-72 sm:h-80 lg:w-64 lg:h-72 rounded-2xl bg-surface-alt border border-border overflow-hidden">
-              {/* Placeholder content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-text-secondary/40">
-                <div className="w-20 h-20 rounded-full bg-surface border border-border flex items-center justify-center">
-                  <span className="font-display font-bold text-2xl text-text-secondary/30">
-                    OJA
-                  </span>
-                </div>
-                <p className="text-xs font-mono text-center px-6 leading-relaxed">
-                  Photo coming soon
-                </p>
-              </div>
+              <Image
+                src="/profile_picture.jpg"
+                alt="Osei Japhet Acquah"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 256px"
+                priority
+              />
 
-              {/* Corner accent */}
-              <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-accent-emerald/10 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-accent-indigo/10 to-transparent" />
+              {/* Corner accents overlay */}
+              <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-accent-emerald/10 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-accent-indigo/10 to-transparent pointer-events-none" />
             </div>
 
             {/* Floating badge */}
