@@ -202,6 +202,31 @@
   }
 }
 
+/* ── Star background (dark mode) ─────────────────────────────────────────── */
+@keyframes star-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-110vh); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.12; }
+}
+
+.star-particle {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgb(220 230 255 / 0.85);
+  animation-name: star-float, star-twinkle;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  will-change: transform;
+}
+
+.star-particle.star-bright {
+  box-shadow: 0 0 5px 1px rgb(200 215 255 / 0.45);
+}
+
 /* Reduced motion — disable heavy animations */
 @media (prefers-reduced-motion: reduce) {
   *,
