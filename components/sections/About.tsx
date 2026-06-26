@@ -38,7 +38,7 @@ export function About() {
                 src="/profile.jpeg"
                 alt="Osei Japhet Acquah"
                 fill
-                className="object-cover object-top"
+                className="object-contain"
                 sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 256px"
                 priority
               />
