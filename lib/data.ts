@@ -133,13 +133,14 @@ export const projects = [
       "Firebase Firestore",
     ],
     links: {
-      live: null as string | null,
-      github: null as string | null,
+      live: "https://accessible-path.vercel.app/",
+      github: "https://github.com/oseijaphetosei-ui/PathSense-Navigation.git",
     },
     award: "Best Use of Live API — Gemini Glitch Hackathon",
     accent: "emerald" as const,
     featured: true,
-    image: null as string | null,
+    image: "/pathsense-preview.jpeg" as string | null,
+    demo: "/pathsense-demo.mp4" as string | null,
   },
   {
     id: "container-optimizer",
@@ -156,6 +157,7 @@ export const projects = [
     accent: "indigo" as const,
     featured: true,
     image: null as string | null,
+    demo: null as string | null,
   },
   {
     id: "scripture-ai",
@@ -172,6 +174,7 @@ export const projects = [
     accent: "emerald" as const,
     featured: true,
     image: null as string | null,
+    demo: null as string | null,
   },
 ];
 

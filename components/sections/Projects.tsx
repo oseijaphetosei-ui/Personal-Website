@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Github, Trophy, ImageIcon } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
@@ -48,14 +49,31 @@ function ProjectCard({
   project: (typeof projects)[number];
   index: number;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const isEmerald = project.accent === "emerald";
   const accentRGB = isEmerald ? "var(--emerald)" : "var(--indigo)";
+
+  const handleMouseEnter = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
 
   return (
     <motion.div variants={scaleUp} custom={index} className="relative">
       <TiltCard className="relative flex flex-col h-full" intensity={8}>
         <article
           className="group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-500"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           style={{
             background: "rgb(var(--surface) / 0.55)",
             backdropFilter: "blur(20px)",
@@ -85,12 +103,27 @@ function ProjectCard({
           {/* Image / preview area */}
           <div className="relative aspect-[16/9] overflow-hidden border-b border-border/40">
             {project.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={project.image}
-                alt={project.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-              />
+              <>
+                {/* Static preview — fades out when video plays */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={project.image}
+                  alt={project.name}
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${project.demo ? "group-hover:opacity-0" : "group-hover:scale-[1.05]"}`}
+                />
+                {/* Demo video — fades in on hover */}
+                {project.demo && (
+                  <video
+                    ref={videoRef}
+                    src={project.demo}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                )}
+              </>
             ) : (
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center gap-2"
