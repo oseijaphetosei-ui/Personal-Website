@@ -100,18 +100,21 @@ function ProjectCard({
             }}
           />
 
-          {/* Image / preview area */}
-          <div className="relative aspect-[16/9] overflow-hidden border-b border-border/40">
+          {/* Preview / video area — portrait ratio to show full phone screen */}
+          <div
+            className="relative aspect-[9/17] overflow-hidden border-b border-border/40"
+            style={{ background: "rgb(0 0 0 / 0.85)" }}
+          >
             {project.image ? (
               <>
-                {/* Static preview — fades out when video plays */}
+                {/* Static preview — object-contain so the full phone screen is visible */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={project.image}
                   alt={project.name}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${project.demo ? "group-hover:opacity-0" : "group-hover:scale-[1.05]"}`}
+                  className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${project.demo ? "group-hover:opacity-0" : ""}`}
                 />
-                {/* Demo video — fades in on hover */}
+                {/* Demo video — fades in on hover, object-contain to preserve phone aspect ratio */}
                 {project.demo && (
                   <video
                     ref={videoRef}
@@ -120,44 +123,44 @@ function ProjectCard({
                     loop
                     playsInline
                     preload="metadata"
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   />
                 )}
               </>
             ) : (
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3"
                 style={{
-                  background: `linear-gradient(135deg, rgb(${accentRGB} / 0.04) 0%, transparent 100%)`,
+                  background: `linear-gradient(160deg, rgb(${accentRGB} / 0.05) 0%, transparent 70%)`,
                 }}
               >
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110"
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110"
                   style={{
-                    background: `rgb(${accentRGB} / 0.06)`,
+                    background: `rgb(${accentRGB} / 0.07)`,
                     borderColor: `rgb(${accentRGB} / 0.18)`,
-                    color: `rgb(${accentRGB} / 0.5)`,
+                    color: `rgb(${accentRGB} / 0.45)`,
                   }}
                 >
-                  <ImageIcon size={22} />
+                  <ImageIcon size={24} />
                 </div>
-                <p className="text-[11px] font-mono text-text-secondary/30">
+                <p className="text-[11px] font-mono text-text-secondary/25">
                   Preview coming soon
                 </p>
               </div>
             )}
 
-            {/* Gradient overlay on hover */}
+            {/* Bottom gradient — blends video into content section */}
             <div
-              className="absolute inset-x-0 bottom-0 h-20 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+              className="absolute inset-x-0 bottom-0 h-12 pointer-events-none"
               style={{
-                background: `linear-gradient(to top, rgb(${accentRGB} / 0.07), transparent)`,
+                background: `linear-gradient(to top, rgb(var(--surface) / 0.18), transparent)`,
               }}
             />
           </div>
 
-          {/* Content */}
-          <div className="flex flex-col flex-1 p-5 gap-3">
+          {/* Content — compact so the video gets the real estate */}
+          <div className="flex flex-col flex-1 p-4 gap-2.5">
             {/* Award badge */}
             {project.award && (
               <div
@@ -183,26 +186,26 @@ function ProjectCard({
             </div>
 
             {/* Description */}
-            <p className="text-text-secondary text-sm leading-relaxed flex-1">
+            <p className="text-text-secondary text-sm leading-relaxed flex-1 line-clamp-3">
               {project.description}
             </p>
 
             {/* Stack */}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {project.stack.slice(0, 5).map((tech) => (
+            <div className="flex flex-wrap gap-1.5">
+              {project.stack.slice(0, 4).map((tech) => (
                 <Badge key={tech} variant="default" size="sm">
                   {tech}
                 </Badge>
               ))}
-              {project.stack.length > 5 && (
+              {project.stack.length > 4 && (
                 <Badge variant="ghost" size="sm">
-                  +{project.stack.length - 5}
+                  +{project.stack.length - 4}
                 </Badge>
               )}
             </div>
 
             {/* Links */}
-            <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+            <div className="flex items-center gap-2 pt-1.5 border-t border-border/40">
               {project.links.live ? (
                 <motion.a
                   href={project.links.live}
