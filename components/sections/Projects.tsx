@@ -100,59 +100,65 @@ function ProjectCard({
             }}
           />
 
-          {/* Preview / video area — portrait ratio to show full phone screen */}
+          {/* Preview / video area
+              aspect-[10/17] = aspect-[9/17] × 0.9 → exactly 10% shorter.
+              The inner media wrapper extends 5.56% past the container on both
+              sides so the phone renders at its original 9:17 size; overflow-
+              hidden clips the top/bottom bezels symmetrically (5% each). */}
           <div
-            className="relative aspect-[9/17] overflow-hidden border-b border-border/40"
+            className="relative aspect-[10/17] overflow-hidden border-b border-border/40"
             style={{ background: "rgb(0 0 0 / 0.85)" }}
           >
-            {project.image ? (
-              <>
-                {/* Static preview — object-contain so the full phone screen is visible */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${project.demo ? "group-hover:opacity-0" : ""}`}
-                />
-                {/* Demo video — fades in on hover, object-contain to preserve phone aspect ratio */}
-                {project.demo && (
-                  <video
-                    ref={videoRef}
-                    src={project.demo}
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            {/* Inner wrapper: taller than container by 11.12% total (5.56% each side)
+                so media fills the original 9:17 frame before clipping */}
+            <div className="absolute -top-[5.56%] -bottom-[5.56%] inset-x-0">
+              {project.image ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${project.demo ? "group-hover:opacity-0" : ""}`}
                   />
-                )}
-              </>
-            ) : (
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                style={{
-                  background: `linear-gradient(160deg, rgb(${accentRGB} / 0.05) 0%, transparent 70%)`,
-                }}
-              >
+                  {project.demo && (
+                    <video
+                      ref={videoRef}
+                      src={project.demo}
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                  )}
+                </>
+              ) : (
                 <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3"
                   style={{
-                    background: `rgb(${accentRGB} / 0.07)`,
-                    borderColor: `rgb(${accentRGB} / 0.18)`,
-                    color: `rgb(${accentRGB} / 0.45)`,
+                    background: `linear-gradient(160deg, rgb(${accentRGB} / 0.05) 0%, transparent 70%)`,
                   }}
                 >
-                  <ImageIcon size={24} />
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      background: `rgb(${accentRGB} / 0.07)`,
+                      borderColor: `rgb(${accentRGB} / 0.18)`,
+                      color: `rgb(${accentRGB} / 0.45)`,
+                    }}
+                  >
+                    <ImageIcon size={24} />
+                  </div>
+                  <p className="text-[11px] font-mono text-text-secondary/25">
+                    Preview coming soon
+                  </p>
                 </div>
-                <p className="text-[11px] font-mono text-text-secondary/25">
-                  Preview coming soon
-                </p>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Bottom gradient — blends video into content section */}
+            {/* Bottom gradient — blends into content section */}
             <div
-              className="absolute inset-x-0 bottom-0 h-12 pointer-events-none"
+              className="absolute inset-x-0 bottom-0 h-10 pointer-events-none z-10"
               style={{
                 background: `linear-gradient(to top, rgb(var(--surface) / 0.18), transparent)`,
               }}
