@@ -101,26 +101,18 @@ export function Hero() {
           style={{ opacity: introOpacity, y: introY }}
         >
           <h2
-            className="font-display font-bold tracking-tight text-text-primary mb-4"
+            className="font-display font-bold tracking-tight text-text-primary mb-5"
             style={{ fontSize: "clamp(2.6rem, 7vw, 6rem)" }}
           >
             I&apos;m <span className="gradient-text">Osei</span>.
           </h2>
 
-          <h3
-            className="font-display font-bold tracking-tight text-text-primary text-balance max-w-2xl leading-[1.15] mb-5"
-            style={{ fontSize: "clamp(1.5rem, 3.4vw, 2.4rem)" }}
-          >
-            From idea to{" "}
-            <span className="gradient-text">production</span>
-            {" "}— I build it.
-          </h3>
-
           <p
             className="text-text-secondary text-balance leading-relaxed max-w-md mb-4"
             style={{ fontSize: "clamp(1rem, 1.9vw, 1.2rem)" }}
           >
-            AI engineer & full-stack developer, shipping real products in production.
+            A Computer Science student at Pomona College crafting intelligent, full-stack
+            digital experiences with a focus on AI, design, and real-world impact.
           </p>
 
           <div className="flex items-center justify-center gap-1.5 mb-10 text-text-secondary text-sm">
