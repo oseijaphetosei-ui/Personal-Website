@@ -12,8 +12,10 @@ export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // lerp 0.12: enough smoothing to glide, low enough that the page never
+    // feels like it's lagging behind the wheel ("dragging").
     const lenis = new Lenis({
-      lerp: 0.09,
+      lerp: 0.12,
       wheelMultiplier: 1,
       touchMultiplier: 1.4,
     });
@@ -34,7 +36,7 @@ export function SmoothScroll() {
       const target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: 0, duration: 1.4 });
+      lenis.scrollTo(target as HTMLElement, { offset: 0, duration: 1.15 });
     };
     document.addEventListener("click", onClick);
 

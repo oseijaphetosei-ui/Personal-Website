@@ -85,6 +85,7 @@ export function Nav() {
                 href={link.href}
                 className={cn(
                   "relative px-3.5 h-9 flex items-center rounded-full text-sm font-medium transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-emerald/40",
                   activeSection === link.href.slice(1)
                     ? "text-text-primary"
                     : "text-text-secondary hover:text-text-primary"
@@ -114,6 +115,7 @@ export function Nav() {
               "hidden md:inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-sm font-medium",
               "bg-surface-alt border border-border text-text-secondary",
               "hover:text-text-primary hover:border-border/80",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-emerald/40",
               "transition-colors duration-200"
             )}
             whileHover={{ scale: 1.02 }}

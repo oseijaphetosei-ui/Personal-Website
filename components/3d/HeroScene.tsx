@@ -222,10 +222,17 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
     let smoothY = 0;
 
     // ── Animation loop ───────────────────────────────────────────────────────
-    let animId: number;
+    // Fully stopped (no rAF at all) while the hero is scrolled out of view —
+    // otherwise the sphere renders forever underneath the rest of the page.
+    let animId = 0;
+    let sceneVisible = true;
     const clock = new THREE.Clock();
 
     const animate = () => {
+      if (!sceneVisible) {
+        animId = 0;
+        return;
+      }
       animId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
@@ -257,8 +264,23 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
 
     animate();
 
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        const nowVisible = entry.isIntersecting;
+        if (nowVisible && !sceneVisible) {
+          sceneVisible = true;
+          animate(); // restart the stopped loop
+        } else if (!nowVisible) {
+          sceneVisible = false; // loop exits on its next frame
+        }
+      },
+      { threshold: 0 }
+    );
+    visibilityObserver.observe(container);
+
     return () => {
       cancelAnimationFrame(animId);
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
       renderer.dispose();
       envTexture.dispose();

@@ -3,102 +3,91 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+const HOVER_SELECTOR = "a, button, [data-cursor-hover]";
+
 export function CustomCursor() {
-  const [mounted, setMounted] = useState(false);
+  const [enabled, setEnabled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const visibleRef = useRef(false);
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springConfig = { stiffness: 500, damping: 36, mass: 0.5 };
-  const springX = useSpring(cursorX, springConfig);
-  const springY = useSpring(cursorY, springConfig);
-
-  const dotSpring = { stiffness: 1000, damping: 50 };
-  const dotX = useSpring(cursorX, dotSpring);
-  const dotY = useSpring(cursorY, dotSpring);
+  const springX = useSpring(cursorX, { stiffness: 500, damping: 36, mass: 0.5 });
+  const springY = useSpring(cursorY, { stiffness: 500, damping: 36, mass: 0.5 });
+  const dotX = useSpring(cursorX, { stiffness: 1000, damping: 50 });
+  const dotY = useSpring(cursorY, { stiffness: 1000, damping: 50 });
 
   useEffect(() => {
+    // Touch devices have no cursor to replace — never mount the layers there.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
+    setEnabled(window.matchMedia("(pointer: fine)").matches);
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!enabled) return;
+
     const handleMove = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setIsVisible(true);
+      }
+    };
+    const handleLeave = () => {
+      visibleRef.current = false;
+      setIsVisible(false);
     };
 
-    const handleEnter = () => setIsVisible(true);
-    const handleLeave = () => setIsVisible(false);
+    // Event delegation: works for elements rendered after mount (mobile
+    // drawer, lazy sections) — per-element listeners never could.
+    const handleOver = (e: MouseEvent) => {
+      if ((e.target as Element).closest?.(HOVER_SELECTOR)) setIsHovering(true);
+    };
+    const handleOut = (e: MouseEvent) => {
+      const to = e.relatedTarget as Element | null;
+      if (!to?.closest?.(HOVER_SELECTOR)) setIsHovering(false);
+    };
 
-    const handleHoverStart = () => setIsHovering(true);
-    const handleHoverEnd = () => setIsHovering(false);
-
-    const interactables = document.querySelectorAll("a, button, [data-cursor-hover]");
-    interactables.forEach((el) => {
-      el.addEventListener("mouseenter", handleHoverStart);
-      el.addEventListener("mouseleave", handleHoverEnd);
-    });
-
-    document.addEventListener("mousemove", handleMove);
-    document.addEventListener("mouseenter", handleEnter);
+    document.addEventListener("mousemove", handleMove, { passive: true });
     document.addEventListener("mouseleave", handleLeave);
+    document.addEventListener("mouseover", handleOver, { passive: true });
+    document.addEventListener("mouseout", handleOut, { passive: true });
 
     return () => {
       document.removeEventListener("mousemove", handleMove);
-      document.removeEventListener("mouseenter", handleEnter);
       document.removeEventListener("mouseleave", handleLeave);
-      interactables.forEach((el) => {
-        el.removeEventListener("mouseenter", handleHoverStart);
-        el.removeEventListener("mouseleave", handleHoverEnd);
-      });
+      document.removeEventListener("mouseover", handleOver);
+      document.removeEventListener("mouseout", handleOut);
     };
-  }, [cursorX, cursorY, isVisible, mounted]);
+  }, [enabled, cursorX, cursorY]);
 
-  if (!mounted) return null;
+  if (!enabled) return null;
 
   return (
     <>
-      {/* Outer ring */}
+      {/* Outer ring — fixed box size, scale-only animation (GPU composited) */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
-        style={{
-          x: springX,
-          y: springY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+        className="fixed top-0 left-0 w-7 h-7 pointer-events-none z-[9999] mix-blend-difference"
+        style={{ x: springX, y: springY, translateX: "-50%", translateY: "-50%" }}
         animate={{
           opacity: isVisible ? 1 : 0,
-          scale: isHovering ? 1.8 : 1,
-          width: isHovering ? 36 : 28,
-          height: isHovering ? 36 : 28,
+          scale: isHovering ? 2.2 : 1,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
-        <div
-          className="w-full h-full rounded-full border border-white/70"
-          style={{ borderRadius: "50%" }}
-        />
+        <div className="w-full h-full rounded-full border border-white/70" />
       </motion.div>
 
       {/* Inner dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
-        style={{
-          x: dotX,
-          y: dotY,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
+        className="fixed top-0 left-0 w-[5px] h-[5px] pointer-events-none z-[9999] mix-blend-difference"
+        style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{
           opacity: isVisible ? 1 : 0,
           scale: isHovering ? 0 : 1,
-          width: 5,
-          height: 5,
         }}
         transition={{ type: "spring", stiffness: 1000, damping: 50 }}
       >

@@ -243,6 +243,19 @@ export function AmbientBackground() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
+    // ── Dark-mode pause ───────────────────────────────────────────────────────
+    // The canvas is dark:opacity-0 — invisible — so drawing the fluid sim in
+    // dark mode is pure GPU waste. Skip the draw while .dark is set; keep the
+    // rAF loop alive (near-zero cost) so the sim resumes instantly on toggle.
+    let isDark = document.documentElement.classList.contains("dark");
+    const themeObserver = new MutationObserver(() => {
+      isDark = document.documentElement.classList.contains("dark");
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
     // ── Render loop ───────────────────────────────────────────────────────────
     const render = () => {
       rafId = requestAnimationFrame(render);
@@ -256,6 +269,8 @@ export function AmbientBackground() {
       mStr    *= 0.983;
       inten   += (intenTarget - inten) * 0.04;
 
+      if (isDark) return; // invisible in dark mode — skip the GPU work
+
       gl.uniform1f(uTime,  (performance.now() - t0) / 1000);
       gl.uniform2f(uMouse, mSmooth.x, mSmooth.y);
       gl.uniform2f(uMvel,  mVel.x,    mVel.y);
@@ -268,6 +283,7 @@ export function AmbientBackground() {
     return () => {
       cancelAnimationFrame(rafId);
       ro.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("scroll", onScroll);
       gl.deleteProgram(prog);
