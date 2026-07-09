@@ -142,8 +142,12 @@ function FloatingPortrait() {
               src="/profile.jpeg"
               alt="Osei Japhet Acquah"
               fill
-              className="object-cover"
+              // Source photo is a wide desk shot with the subject in the right
+              // half — object-right keeps the crop anchored on him instead of
+              // centering on the monitor.
+              className="object-cover object-right"
               sizes="(max-width: 1024px) 320px, 340px"
+              quality={95}
               priority
             />
             {/* Depth scrim — top shadow, bottom hint of light */}
