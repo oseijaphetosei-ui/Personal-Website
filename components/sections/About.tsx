@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import {
   motion,
   useInView,
@@ -137,21 +136,13 @@ function FloatingPortrait() {
               "0 30px 70px -20px rgba(0,0,0,0.35), 0 12px 30px -10px rgba(56,189,248,0.12), inset 0 1px 0 rgba(255,255,255,0.07)",
           }}
         >
-          <div className="relative aspect-[4/5] bg-surface-alt">
-            <Image
-              src="/profile.jpeg"
-              alt="Osei Japhet Acquah"
-              fill
-              // Source photo is a wide desk shot with the subject in the right
-              // half — object-right keeps the crop anchored on him instead of
-              // centering on the monitor.
-              className="object-cover object-right"
-              sizes="(max-width: 1024px) 320px, 340px"
-              quality={95}
-              priority
-            />
-            {/* Depth scrim — top shadow, bottom hint of light */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-white/[0.04] pointer-events-none" />
+          <div className="relative aspect-[4/5] bg-surface-alt flex flex-col items-center justify-center gap-3">
+            <span className="font-display font-bold text-4xl gradient-text opacity-40">
+              {siteConfig.initials}
+            </span>
+            <p className="text-[11px] font-mono uppercase tracking-[0.15em] text-text-secondary/35">
+              Portrait coming soon
+            </p>
           </div>
 
           {/* Cursor-tracked specular sweep */}

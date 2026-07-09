@@ -19,12 +19,11 @@ const HeroScene = dynamic(
 const EASE = [0.21, 0.47, 0.32, 0.98] as const;
 
 /**
- * Cinematic hero — three scenes staged across 300vh of scroll,
+ * Cinematic hero — two scenes staged across 220vh of scroll,
  * pinned to the viewport. Each scroll earns the next reveal:
  *
- *   Scene 1 · "👋 Hello."               — just a greeting
- *   Scene 2 · the statement             — one sentence, nothing else
- *   Scene 3 · "I'm Osei." + CTAs        — the introduction
+ *   Scene 1 · "👋 Hello."                              — just a greeting
+ *   Scene 2 · "I'm Osei." + the statement + CTAs        — the introduction
  */
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,26 +46,22 @@ export function Hero() {
   });
 
   // Scene 1 — greeting
-  const greetOpacity = useTransform(scrollYProgress, [0, 0.16, 0.28], [1, 1, 0]);
-  const greetScale   = useTransform(scrollYProgress, [0, 0.28], [1, 0.92]);
-  const greetY       = useTransform(scrollYProgress, [0, 0.28], [0, -40]);
+  const greetOpacity = useTransform(scrollYProgress, [0, 0.18, 0.32], [1, 1, 0]);
+  const greetScale   = useTransform(scrollYProgress, [0, 0.32], [1, 0.92]);
+  const greetY       = useTransform(scrollYProgress, [0, 0.32], [0, -40]);
 
-  // Scene 2 — the statement
-  const stmtOpacity = useTransform(scrollYProgress, [0.26, 0.38, 0.56, 0.68], [0, 1, 1, 0]);
-  const stmtY       = useTransform(scrollYProgress, [0.26, 0.38, 0.68], [48, 0, -40]);
-
-  // Scene 3 — the introduction (stays)
-  const introOpacity = useTransform(scrollYProgress, [0.68, 0.82], [0, 1]);
-  const introY       = useTransform(scrollYProgress, [0.68, 0.84], [48, 0]);
+  // Scene 2 — the introduction (stays)
+  const introOpacity = useTransform(scrollYProgress, [0.30, 0.46], [0, 1]);
+  const introY       = useTransform(scrollYProgress, [0.30, 0.48], [48, 0]);
 
   // 3D scene breathes in slowly and dims slightly behind text
   const sceneOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9], [0.65, 0.85, 0.85]);
 
   // Scroll cue — visible until the final scene lands
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.06, 0.7, 0.82], [0, 1, 1, 0]);
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.06, 0.28, 0.46], [0, 1, 1, 0]);
 
   return (
-    <section id="home" ref={containerRef} className="relative h-[300vh]">
+    <section id="home" ref={containerRef} className="relative h-[220vh]">
       {/* Pinned stage */}
       <div className="sticky top-0 h-[100dvh] overflow-hidden flex items-center justify-center">
         {/* Living aurora light field */}
@@ -100,32 +95,26 @@ export function Hero() {
           </motion.h1>
         </motion.div>
 
-        {/* ── Scene 2 · The statement ─────────────────────────────────── */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none px-6"
-          style={{ opacity: stmtOpacity, y: stmtY }}
-        >
-          <h2
-            className="font-display font-bold tracking-tight text-text-primary text-center text-balance max-w-5xl leading-[1.08]"
-            style={{ fontSize: "clamp(2.4rem, 6.5vw, 5.5rem)" }}
-          >
-            From idea to{" "}
-            <span className="gradient-text">production</span>
-            {" "}— I build it.
-          </h2>
-        </motion.div>
-
-        {/* ── Scene 3 · The introduction ──────────────────────────────── */}
+        {/* ── Scene 2 · The introduction ──────────────────────────────── */}
         <motion.div
           className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
           style={{ opacity: introOpacity, y: introY }}
         >
           <h2
-            className="font-display font-bold tracking-tight text-text-primary mb-6"
+            className="font-display font-bold tracking-tight text-text-primary mb-4"
             style={{ fontSize: "clamp(2.6rem, 7vw, 6rem)" }}
           >
             I&apos;m <span className="gradient-text">Osei</span>.
           </h2>
+
+          <h3
+            className="font-display font-bold tracking-tight text-text-primary text-balance max-w-2xl leading-[1.15] mb-5"
+            style={{ fontSize: "clamp(1.5rem, 3.4vw, 2.4rem)" }}
+          >
+            From idea to{" "}
+            <span className="gradient-text">production</span>
+            {" "}— I build it.
+          </h3>
 
           <p
             className="text-text-secondary text-balance leading-relaxed max-w-md mb-4"
