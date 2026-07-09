@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, BookOpen, Code2, Globe2 } from "lucide-react";
+import { Github, Linkedin, Mail, BookOpen, Code2, Globe2, MapPin } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { Button } from "@/components/ui/Button";
 import { siteConfig, education } from "@/lib/data";
@@ -11,7 +11,7 @@ import { fadeUp, fadeLeft, fadeRight, staggerContainer } from "@/lib/animations"
 const quickFacts = [
   { icon: BookOpen, label: "Studying", value: "CS & Data Science, Pomona College" },
   { icon: Code2, label: "Building", value: "AI-powered products with real-world impact" },
-  { icon: Globe2, label: "Originally from", value: "Kumasi, Ghana 🇬🇭" },
+  { icon: Globe2, label: "Originally from", value: "Kumasi, Ghana" },
 ];
 
 export function About() {
@@ -54,8 +54,9 @@ export function About() {
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
             >
-              <span className="text-xs font-mono text-text-primary font-medium">
-                📍 Claremont, CA
+              <span className="text-xs font-mono text-text-primary font-medium flex items-center gap-1.5">
+                <MapPin size={11} className="text-accent-emerald" />
+                Claremont, CA
               </span>
             </motion.div>
           </div>

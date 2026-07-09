@@ -15,18 +15,13 @@ export function Projects() {
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
         <p className="section-label mb-3">Selected Work</p>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <h2
-            className="font-display font-bold text-text-primary leading-tight"
-            style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
-          >
-            Products I&apos;ve{" "}
-            <span className="gradient-text">designed & built.</span>
-          </h2>
-          <p className="text-text-secondary text-sm max-w-xs leading-relaxed">
-            Media, links, and demos are being added — check back soon.
-          </p>
-        </div>
+        <h2
+          className="font-display font-bold text-text-primary leading-tight"
+          style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
+        >
+          Products I&apos;ve{" "}
+          <span className="gradient-text">designed & built.</span>
+        </h2>
       </motion.div>
 
       {/* Projects grid */}

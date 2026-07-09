@@ -187,14 +187,13 @@ export function Hero() {
             {/* Tagline */}
             <motion.p
               variants={fadeUp}
-              className="text-text-secondary text-balance leading-relaxed mb-9 max-w-xl mx-auto lg:mx-0"
-              style={{ fontSize: "clamp(0.95rem, 1.8vw, 1.15rem)" }}
+              className="text-text-secondary text-balance leading-relaxed mb-9 max-w-lg mx-auto lg:mx-0"
+              style={{ fontSize: "clamp(0.95rem, 1.8vw, 1.1rem)" }}
             >
-              {siteConfig.tagline}
-              <br className="hidden sm:block" />
+              CS & Data Science @ Pomona College.{" "}
               <span className="text-text-primary/80">
-                {" "}
-                From Kumasi to Claremont — shipping products that create real-world impact.
+                I build AI-powered products — from edge inference systems processing 1K+ events/sec
+                to award-winning accessibility apps deployed in production.
               </span>
             </motion.p>
 

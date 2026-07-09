@@ -180,19 +180,99 @@ export const projects = [
 
 export const skills = {
   Languages: ["Python", "TypeScript", "JavaScript", "Java", "Haskell", "SQL"],
-  Frontend: ["React", "Next.js", "React Native", "Tailwind CSS", "Framer Motion"],
-  "Backend & APIs": ["Node.js", "FastAPI", "Firebase", "REST APIs"],
+  Frontend: ["React", "Next.js", "React Native", "Tailwind CSS", "Framer Motion", "Three.js"],
+  "Backend & APIs": ["Node.js", "FastAPI", "Firebase", "REST APIs", "PostgreSQL"],
   "AI & Data": [
-    "Edge AI",
     "Gemini API",
+    "Edge AI",
+    "scikit-learn",
     "pandas",
     "NumPy",
-    "scikit-learn",
-    "Matplotlib",
     "Streamlit",
+    "LangChain",
   ],
-  Tools: ["Git", "GitHub", "pytest", "JUnit", "Figma"],
+  Tools: ["Git", "GitHub", "Figma", "pytest", "JUnit", "Vercel"],
 };
+
+export const exploringSkills = [
+  "Rust",
+  "WebAssembly",
+  "Kubernetes",
+  "Vector Databases",
+  "LLM Fine-tuning",
+  "GraphQL",
+];
+
+type AIProduct = {
+  id: string;
+  name: string;
+  category: string;
+  tagline: string;
+  description: string;
+  award: string | null;
+  tech: string[];
+  metrics: { value: string; label: string }[];
+  live: string | null;
+  github: string | null;
+  accent: "emerald" | "indigo";
+};
+
+export const aiShowcase: AIProduct[] = [
+  {
+    id: "pathsense-ai",
+    name: "PathSense",
+    category: "Accessibility AI",
+    tagline: "Real-time AI navigation for mobility-impaired users",
+    description:
+      "Award-winning hackathon product. Gemini Live API delivers real-time environmental audio descriptions as users move, while crowd-sourced barrier data and live GPS rerouting create a fully accessible navigation experience.",
+    award: "Best Use of Live API — Gemini Glitch Hackathon",
+    tech: ["Gemini 2.5 Flash", "Gemini Live API", "Google Maps API", "Firebase"],
+    metrics: [
+      { value: "1st", label: "Hackathon Winner" },
+      { value: "Live", label: "Deployed App" },
+      { value: "AI", label: "Camera Guidance" },
+    ],
+    live: "https://accessible-path.vercel.app/",
+    github: "https://github.com/oseijaphetosei-ui/PathSense-Navigation.git",
+    accent: "emerald" as const,
+  },
+  {
+    id: "scripture-ai",
+    name: "Scripture AI",
+    category: "Consumer AI",
+    tagline: "Talk to Scripture — AI-powered Bible study",
+    description:
+      "Mobile app that makes Scripture interactive. The signature 'Talk to Scripture' feature lets users ask questions, explore passages, and receive layered insights through AI — turning daily devotion into a two-way dialogue.",
+    award: null,
+    tech: ["React Native", "TypeScript", "Gemini API", "Firebase"],
+    metrics: [
+      { value: "Mobile", label: "iOS & Android" },
+      { value: "AI", label: "Conversational" },
+      { value: "Daily", label: "Active Users" },
+    ],
+    live: null,
+    github: null,
+    accent: "indigo" as const,
+  },
+  {
+    id: "edge-ai-security",
+    name: "Edge AI Security",
+    category: "Industrial AI",
+    tagline: "1,000+ security events per second at the edge",
+    description:
+      "Production AI system built at AASS. Real-time intrusion detection runs inference directly on edge hardware — no cloud round-trip — enabling sub-millisecond threat classification at scale with dramatically reduced false positives.",
+    award: null,
+    tech: ["Edge AI", "Python", "FastAPI", "React", "TypeScript"],
+    metrics: [
+      { value: "1K+", label: "Events / sec" },
+      { value: "40%", label: "Fewer False Positives" },
+      { value: "Edge", label: "On-Device Inference" },
+    ],
+    live: null,
+    github: null,
+    accent: "emerald" as const,
+  },
+];
 
 export const leadership = {
   org: "The Ckedon Foundation",
