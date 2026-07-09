@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, Download, MapPin, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { siteConfig, roles } from "@/lib/data";
+import { AuroraBackground } from "@/components/effects/AuroraBackground";
+import { siteConfig } from "@/lib/data";
 import { fadeUp, fadeIn, staggerContainer } from "@/lib/animations";
 
 const HeroScene = dynamic(
@@ -27,52 +28,49 @@ const HeroScene = dynamic(
   }
 );
 
-// Each word is wrapped in whitespace-nowrap so the browser only breaks at spaces,
-// never mid-word regardless of viewport width.
-function AnimatedName({ name }: { name: string }) {
-  const words = name.split(" ");
-  const wordOffsets = words.map((_, i) =>
-    words.slice(0, i).reduce((sum, w) => sum + w.length + 1, 0)
-  );
+const EASE = [0.21, 0.47, 0.32, 0.98] as const;
+
+/** Headline words reveal one by one — each rises out of a blur. */
+function StatementHeadline() {
+  // "intelligent products" carries the gradient — the two words that matter most.
+  const segments: { text: string; gradient?: boolean }[] = [
+    { text: "I build" },
+    { text: "intelligent", gradient: true },
+    { text: "products", gradient: true },
+    { text: "that matter." },
+  ];
+
+  let wordIndex = 0;
 
   return (
     <h1
-      className="font-display font-bold tracking-tight text-text-primary leading-[1.05]"
-      style={{ fontSize: "clamp(2.2rem, 6vw, 5.2rem)" }}
-      aria-label={name}
+      className="font-display font-bold tracking-tight text-text-primary leading-[1.06] text-balance"
+      style={{ fontSize: "clamp(2.5rem, 6.5vw, 5.4rem)" }}
     >
-      {words.map((word, wi) => (
-        <span
-          key={wi}
-          className="inline-block whitespace-nowrap"
-          style={wi < words.length - 1 ? { marginRight: "0.28em" } : undefined}
-        >
-          {word.split("").map((char, ci) => (
+      {segments.map((seg, si) =>
+        seg.text.split(" ").map((word) => {
+          const delay = 0.55 + wordIndex * 0.11;
+          wordIndex += 1;
+          return (
             <motion.span
-              key={ci}
-              className="inline-block"
-              initial={{ opacity: 0, y: 22, filter: "blur(6px)" }}
+              key={`${si}-${word}`}
+              className={`inline-block mr-[0.24em] ${seg.gradient ? "gradient-text" : ""}`}
+              initial={{ opacity: 0, y: 26, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{
-                delay: 0.15 + (wordOffsets[wi] + ci) * 0.028,
-                duration: 0.5,
-                ease: [0.21, 0.47, 0.32, 0.98],
-              }}
+              transition={{ delay, duration: 0.65, ease: EASE }}
             >
-              {char}
+              {word}
             </motion.span>
-          ))}
-        </span>
-      ))}
+          );
+        })
+      )}
     </h1>
   );
 }
 
 export function Hero() {
-  const [currentRole, setCurrentRole] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
-
   const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -86,51 +84,33 @@ export function Hero() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentRole((prev) => (prev + 1) % roles.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section
       id="home"
       ref={ref}
       className="relative min-h-[100dvh] flex flex-col overflow-x-hidden"
     >
-      {/* Background dot grid */}
-      <div className="absolute inset-0 dot-grid opacity-0 dark:opacity-[0.8]" />
+      {/* Living aurora light field */}
+      <AuroraBackground />
 
-      {/* Ambient gradient blobs */}
-      <motion.div
-        className="absolute top-1/4 -left-48 w-96 h-96 rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "rgb(var(--emerald) / 0.07)" }}
-        animate={{ scale: [1, 1.18, 1], opacity: [0.07, 0.13, 0.07] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-1/3 -right-48 w-96 h-96 rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "rgb(var(--indigo) / 0.07)" }}
-        animate={{ scale: [1, 1.22, 1], opacity: [0.07, 0.12, 0.07] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
-      />
+      {/* Dot grid — dark mode texture */}
+      <div className="absolute inset-0 dot-grid opacity-0 dark:opacity-[0.8]" />
 
       {/* Two-column layout */}
       <div className="flex-1 flex items-center">
-        <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8 pt-20 pb-12 lg:py-0">
+        <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8 pt-24 pb-12 lg:py-0">
 
-          {/* Left — text */}
+          {/* Left — the introduction */}
           <motion.div
             className="flex flex-col justify-center z-10 text-center lg:text-left"
             variants={staggerContainer}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            {/* Available badge */}
+            {/* Availability badge */}
             <motion.div
               variants={fadeIn}
-              className="flex justify-center lg:justify-start mb-8"
+              className="flex justify-center lg:justify-start mb-10"
             >
               <motion.div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-emerald/25 bg-accent-emerald/[0.07] text-accent-emerald text-xs font-mono font-medium"
@@ -147,55 +127,45 @@ export function Hero() {
               </motion.div>
             </motion.div>
 
-            {/* Name */}
-            <motion.div variants={fadeUp} className="mb-4">
-              <AnimatedName name={siteConfig.name} />
-            </motion.div>
-
-            {/* Animated role */}
-            <motion.div
-              variants={fadeUp}
-              className="flex items-center justify-center lg:justify-start mb-5"
-              style={{ minHeight: "clamp(1.8rem, 4.5vw, 3.2rem)" }}
+            {/* The greeting — warm, human, first thing that lands */}
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.55, ease: EASE }}
+              className="font-display font-medium text-text-secondary mb-4"
+              style={{ fontSize: "clamp(1.15rem, 2.2vw, 1.6rem)" }}
             >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={currentRole}
-                  className="gradient-text font-display font-semibold tracking-tight"
-                  style={{ fontSize: "clamp(1.3rem, 3.5vw, 2.8rem)" }}
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-                  transition={{ duration: 0.42, ease: [0.21, 0.47, 0.32, 0.98] }}
-                >
-                  {roles[currentRole]}
-                </motion.span>
-              </AnimatePresence>
-            </motion.div>
+              <span className="wave-hand mr-2">👋</span>
+              Hello, I&apos;m{" "}
+              <span className="text-text-primary font-semibold">Osei</span>.
+            </motion.p>
+
+            {/* Statement headline — the mission, not the résumé */}
+            <div className="mb-6">
+              <StatementHeadline />
+            </div>
+
+            {/* Who — one calm supporting line */}
+            <motion.p
+              variants={fadeUp}
+              className="text-text-secondary text-balance leading-relaxed mb-5 max-w-lg mx-auto lg:mx-0"
+              style={{ fontSize: "clamp(0.95rem, 1.8vw, 1.1rem)" }}
+            >
+              AI engineer & full-stack developer — from edge systems processing{" "}
+              <span className="text-text-primary/85">1K+ events per second</span>{" "}
+              to award-winning accessibility apps in production.
+            </motion.p>
 
             {/* Location */}
             <motion.div
               variants={fadeUp}
-              className="flex items-center justify-center lg:justify-start gap-1.5 mb-7 text-text-secondary text-sm"
+              className="flex items-center justify-center lg:justify-start gap-1.5 mb-9 text-text-secondary text-sm"
             >
               <MapPin size={13} className="text-accent-emerald" />
               <span>Pomona College · Claremont, CA</span>
               <span className="w-1 h-1 rounded-full bg-border mx-1" />
-              <span>Class of 2028</span>
+              <span>Kumasi, Ghana</span>
             </motion.div>
-
-            {/* Tagline */}
-            <motion.p
-              variants={fadeUp}
-              className="text-text-secondary text-balance leading-relaxed mb-9 max-w-lg mx-auto lg:mx-0"
-              style={{ fontSize: "clamp(0.95rem, 1.8vw, 1.1rem)" }}
-            >
-              CS & Data Science @ Pomona College.{" "}
-              <span className="text-text-primary/80">
-                I build AI-powered products — from edge inference systems processing 1K+ events/sec
-                to award-winning accessibility apps deployed in production.
-              </span>
-            </motion.p>
 
             {/* CTAs */}
             <motion.div
@@ -208,7 +178,7 @@ export function Hero() {
                 variant="primary"
                 iconRight={<ArrowRight size={16} />}
               >
-                View My Work
+                Explore My Work
               </Button>
               <Button
                 href={siteConfig.resume}
@@ -236,11 +206,7 @@ export function Hero() {
                   className="flex flex-col items-center lg:items-start gap-1"
                   initial={{ opacity: 0, y: 14 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{
-                    delay: 0.85 + i * 0.1,
-                    duration: 0.5,
-                    ease: [0.21, 0.47, 0.32, 0.98],
-                  }}
+                  transition={{ delay: 1.5 + i * 0.1, duration: 0.5, ease: EASE }}
                 >
                   <span className="font-display font-bold text-2xl gradient-text leading-none">
                     {stat.value}
@@ -268,7 +234,7 @@ export function Hero() {
               className="absolute top-[15%] right-4 xl:right-0 glass rounded-xl px-3 py-2 text-xs font-mono text-accent-emerald border border-accent-emerald/20"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.4, duration: 0.6 }}
+              transition={{ delay: 1.6, duration: 0.6 }}
             >
               Full-Stack · AI · Data
             </motion.div>
@@ -276,7 +242,7 @@ export function Hero() {
               className="absolute bottom-[22%] left-4 xl:left-2 glass rounded-xl px-3 py-2 text-xs font-mono text-accent-indigo border border-accent-indigo/20"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.6, duration: 0.6 }}
+              transition={{ delay: 1.8, duration: 0.6 }}
             >
               React · Python · LLMs
             </motion.div>
@@ -284,15 +250,15 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll invitation */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
+        transition={{ delay: 2.2 }}
       >
         <span className="text-text-secondary/40 text-[10px] font-mono tracking-[0.2em] uppercase">
-          scroll
+          the story
         </span>
         <motion.div
           className="w-px h-10 bg-gradient-to-b from-accent-emerald/60 to-transparent"

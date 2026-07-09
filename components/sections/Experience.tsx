@@ -182,11 +182,11 @@ function ExperienceCard({ exp, index }: { exp: Exp; index: number }) {
 
 export function Experience() {
   return (
-    <SectionWrapper id="experience" className="bg-surface-alt/30">
+    <SectionWrapper id="experience" className="bg-surface-alt/30" atmosphere="indigo">
 
       {/* Header — still participates in SectionWrapper's stagger cascade */}
       <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">Experience</p>
+        <p className="section-label mb-3">02 · Where I&apos;ve Built</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
           style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}

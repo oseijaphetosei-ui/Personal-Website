@@ -14,10 +14,10 @@ export function Leadership() {
   const statsInView = useInView(statsRef, { once: true, margin: "-60px" });
 
   return (
-    <SectionWrapper id="leadership">
+    <SectionWrapper id="leadership" className="bg-surface-alt/30" atmosphere="emerald">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">Leadership & Impact</p>
+        <p className="section-label mb-3">06 · Beyond the Code</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
           style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}

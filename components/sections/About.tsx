@@ -16,10 +16,10 @@ const quickFacts = [
 
 export function About() {
   return (
-    <SectionWrapper id="about">
+    <SectionWrapper id="about" atmosphere="emerald">
       {/* Section label */}
       <motion.p variants={fadeUp} className="section-label mb-3">
-        About Me
+        01 · Who I Am
       </motion.p>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">

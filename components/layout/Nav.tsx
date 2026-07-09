@@ -60,107 +60,109 @@ export function Nav() {
 
   return (
     <>
+      {/* Floating glass pill — detached from the page edge, part of the experience */}
       <motion.header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          scrolled
-            ? "glass border-b border-border/60 shadow-sm shadow-black/5"
-            : "bg-transparent"
-        )}
-        initial={{ y: -80, opacity: 0 }}
+        className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none"
+        initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.1 }}
+        transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.15 }}
       >
-        <div className="container-wide">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <motion.a
-              href="#home"
-              className="flex items-center gap-2 group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-emerald to-accent-indigo flex items-center justify-center">
-                <span className="text-white text-xs font-display font-bold tracking-tight">
-                  OJ
-                </span>
-              </div>
-              <span className="font-display font-semibold text-text-primary text-sm hidden sm:block">
-                {siteConfig.shortName}
+        <div
+          className={cn(
+            "pointer-events-auto flex items-center gap-1 h-12 pl-2 pr-2 rounded-full border transition-all duration-300",
+            scrolled
+              ? "glass border-border/60 shadow-lg shadow-black/[0.06]"
+              : "glass border-border/40 shadow-md shadow-black/[0.04]"
+          )}
+        >
+          {/* Logo */}
+          <motion.a
+            href="#home"
+            className="flex items-center gap-2 pl-1 pr-2"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-emerald to-accent-indigo flex items-center justify-center">
+              <span className="text-white text-[11px] font-display font-bold tracking-tight">
+                OJ
               </span>
-            </motion.a>
-
-            {/* Desktop nav links */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors",
-                    activeSection === link.href.slice(1)
-                      ? "text-text-primary"
-                      : "text-text-secondary hover:text-text-primary"
-                  )}
-                >
-                  {activeSection === link.href.slice(1) && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-lg bg-surface-alt border border-border"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{link.label}</span>
-                </a>
-              ))}
-            </nav>
-
-            {/* Right actions */}
-            <div className="flex items-center gap-2">
-              <ThemeToggle className="hidden sm:flex" />
-              <motion.a
-                href={siteConfig.resume}
-                download
-                className={cn(
-                  "hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium",
-                  "bg-accent-emerald text-white shadow-sm",
-                  "hover:brightness-110 hover:shadow-md hover:shadow-accent-emerald/20",
-                  "transition-all duration-200"
-                )}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              >
-                <Download size={13} />
-                Resume
-              </motion.a>
-
-              {/* Mobile menu button */}
-              <motion.button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className={cn(
-                  "md:hidden w-9 h-9 rounded-xl flex items-center justify-center",
-                  "bg-surface-alt border border-border text-text-secondary",
-                  "hover:text-text-primary transition-colors"
-                )}
-                whileTap={{ scale: 0.92 }}
-                aria-label="Toggle menu"
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={mobileOpen ? "close" : "open"}
-                    initial={{ opacity: 0, rotate: -20 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: 20 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    {mobileOpen ? <X size={17} /> : <Menu size={17} />}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.button>
             </div>
-          </div>
+            <span className="font-display font-semibold text-text-primary text-sm hidden xl:block">
+              {siteConfig.shortName}
+            </span>
+          </motion.a>
+
+          {/* Desktop links */}
+          <nav className="hidden md:flex items-center">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative px-3.5 h-9 flex items-center rounded-full text-sm font-medium transition-colors",
+                  activeSection === link.href.slice(1)
+                    ? "text-text-primary"
+                    : "text-text-secondary hover:text-text-primary"
+                )}
+              >
+                {activeSection === link.href.slice(1) && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-surface-alt border border-border/70"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{link.label}</span>
+              </a>
+            ))}
+          </nav>
+
+          {/* Divider */}
+          <div className="hidden md:block w-px h-5 bg-border/60 mx-1" />
+
+          {/* Actions */}
+          <ThemeToggle className="hidden sm:flex" />
+          <motion.a
+            href={siteConfig.resume}
+            download
+            className={cn(
+              "hidden md:inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-sm font-medium",
+              "bg-accent-emerald text-white shadow-sm",
+              "hover:brightness-110 hover:shadow-md hover:shadow-accent-emerald/20",
+              "transition-all duration-200"
+            )}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <Download size={13} />
+            Resume
+          </motion.a>
+
+          {/* Mobile menu button */}
+          <motion.button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className={cn(
+              "md:hidden w-9 h-9 rounded-full flex items-center justify-center",
+              "bg-surface-alt border border-border text-text-secondary",
+              "hover:text-text-primary transition-colors"
+            )}
+            whileTap={{ scale: 0.92 }}
+            aria-label="Toggle menu"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={mobileOpen ? "close" : "open"}
+                initial={{ opacity: 0, rotate: -20 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 20 }}
+                transition={{ duration: 0.15 }}
+              >
+                {mobileOpen ? <X size={17} /> : <Menu size={17} />}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
         </div>
       </motion.header>
 
@@ -176,7 +178,7 @@ export function Nav() {
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
-              className="fixed top-16 left-4 right-4 z-50 rounded-2xl glass border border-border p-4 shadow-xl"
+              className="fixed top-20 left-4 right-4 z-50 rounded-3xl glass border border-border p-4 shadow-xl"
               initial={{ opacity: 0, y: -12, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.96 }}
@@ -208,7 +210,7 @@ export function Nav() {
                   href={siteConfig.resume}
                   download
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium bg-accent-emerald text-white"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium bg-accent-emerald text-white"
                 >
                   <Download size={13} />
                   Download Resume

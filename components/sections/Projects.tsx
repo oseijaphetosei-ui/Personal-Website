@@ -11,10 +11,10 @@ import { fadeUp, scaleUp, staggerContainer } from "@/lib/animations";
 
 export function Projects() {
   return (
-    <SectionWrapper id="projects">
+    <SectionWrapper id="projects" atmosphere="dual">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">Selected Work</p>
+        <p className="section-label mb-3">03 · What I&apos;ve Shipped</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
           style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}

@@ -19,14 +19,24 @@ export function Contact() {
   };
 
   return (
-    <SectionWrapper id="contact">
+    <SectionWrapper id="contact" atmosphere="dual">
+      {/* Soft closing light behind the final statement */}
+      <div
+        aria-hidden
+        className="absolute left-1/2 top-8 -translate-x-1/2 w-[560px] h-[280px] rounded-full blur-[100px] pointer-events-none opacity-60 dark:opacity-40"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgb(var(--emerald) / 0.08) 0%, rgb(var(--indigo) / 0.05) 50%, transparent 75%)",
+        }}
+      />
+
       {/* Centered CTA */}
       <motion.div
         variants={staggerContainer}
-        className="text-center max-w-2xl mx-auto mb-16"
+        className="relative text-center max-w-2xl mx-auto mb-16"
       >
         <motion.p variants={fadeUp} className="section-label mb-4">
-          Get In Touch
+          07 · Let&apos;s Talk
         </motion.p>
 
         <motion.h2
@@ -167,6 +177,14 @@ export function Contact() {
         />
         Currently available for {siteConfig.availableFor} internships
       </motion.div>
+
+      {/* Closing sign-off */}
+      <motion.p
+        variants={fadeUp}
+        className="mt-14 text-center text-xs font-mono text-text-secondary/40 tracking-[0.15em] uppercase"
+      >
+        From Kumasi to Claremont — thanks for scrolling
+      </motion.p>
     </SectionWrapper>
   );
 }

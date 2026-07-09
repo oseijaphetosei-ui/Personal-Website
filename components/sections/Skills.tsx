@@ -134,10 +134,10 @@ export function Skills() {
   const exploringInView = useInView(exploringRef, { once: true, margin: "-40px 0px" });
 
   return (
-    <SectionWrapper id="skills" className="bg-surface-alt/30">
+    <SectionWrapper id="skills" atmosphere="indigo">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">Technical Skills</p>
+        <p className="section-label mb-3">05 · The Toolkit</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
           style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}

@@ -200,10 +200,10 @@ function AICard({
 
 export function AIShowcase() {
   return (
-    <SectionWrapper id="ai" className="bg-surface-alt/30">
+    <SectionWrapper id="ai" className="bg-surface-alt/30" atmosphere="emerald">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">AI Products</p>
+        <p className="section-label mb-3">04 · AI Products</p>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <h2
             className="font-display font-bold text-text-primary leading-tight"
