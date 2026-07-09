@@ -88,16 +88,18 @@ function FeatureProject({
             onMouseEnter={playDemo}
             onMouseLeave={stopDemo}
           >
-            {project.image ? (
+            {project.image || project.demo ? (
               <div className="absolute -top-[5.56%] -bottom-[5.56%] inset-x-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${
-                    project.demo ? "group-hover:opacity-0" : ""
-                  }`}
-                />
+                {project.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={project.image}
+                    alt={project.name}
+                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${
+                      project.demo ? "group-hover:opacity-0" : ""
+                    }`}
+                  />
+                )}
                 {project.demo && (
                   <video
                     ref={videoRef}
@@ -106,7 +108,11 @@ function FeatureProject({
                     loop
                     playsInline
                     preload="metadata"
-                    className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    // With a preview image the video stays hidden until hover;
+                    // without one, its first frame IS the preview.
+                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${
+                      project.image ? "opacity-0 group-hover:opacity-100" : ""
+                    }`}
                   />
                 )}
               </div>

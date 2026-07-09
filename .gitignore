@@ -33,3 +33,6 @@ next-env.d.ts
 # testing
 test-results/
 playwright-report/
+
+# raw demo footage — exceeds GitHub's 100MB limit; optimized copies live in public/
+/scriptureai-demo.mp4
