@@ -104,7 +104,7 @@ function ExperienceCard({ exp, index }: { exp: Exp; index: number }) {
           // Border colour changes are handled by Tailwind hover classes so they
           // respect CSS variables (dark / light mode) without any JS.
           className="
-            relative flex-1 overflow-hidden rounded-2xl p-6 bg-surface
+            relative flex-1 overflow-hidden rounded-2xl p-5 bg-surface
             border border-border/40 dark:border-white/[0.05]
             hover:border-border/65 dark:hover:border-white/[0.09]
             transition-colors duration-300
@@ -127,9 +127,9 @@ function ExperienceCard({ exp, index }: { exp: Exp; index: number }) {
           <div className="relative">
 
             {/* Top row */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-3">
               <div>
-                <div className="flex flex-wrap items-center gap-2 mb-1">
+                <div className="flex flex-wrap items-center gap-2 mb-0.5">
                   <h3 className="font-display font-semibold text-text-primary text-lg leading-tight">
                     {exp.company}
                   </h3>
@@ -154,9 +154,9 @@ function ExperienceCard({ exp, index }: { exp: Exp; index: number }) {
             </div>
 
             {/* Bullets */}
-            <ul className="space-y-2.5 mb-5">
+            <ul className="space-y-1.5 mb-4">
               {exp.bullets.map((bullet, i) => (
-                <li key={i} className="flex gap-3 text-sm text-text-secondary leading-relaxed">
+                <li key={i} className="flex gap-3 text-sm text-text-secondary leading-snug">
                   <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-accent-emerald/60 shrink-0" />
                   <span>{bullet}</span>
                 </li>
@@ -196,11 +196,12 @@ export function Experience() {
         </h2>
       </motion.div>
 
-      {/* Timeline — plain div; cards manage their own entrance animations */}
-      <div className="relative">
+      {/* Timeline — capped width so card text reads at a comfortable line
+          length instead of stretching edge-to-edge on wide screens */}
+      <div className="relative max-w-3xl mx-auto">
         <div className="absolute left-[22px] top-0 bottom-0 w-px bg-gradient-to-b from-accent-emerald/60 via-border to-transparent hidden sm:block" />
 
-        <div className="space-y-8">
+        <div className="space-y-14 md:space-y-20">
           {experiences.map((exp, index) => (
             <ExperienceCard key={exp.id} exp={exp} index={index} />
           ))}
