@@ -51,7 +51,12 @@ function FeatureProject({
   };
 
   return (
-    <div ref={rowRef} className="relative py-14 md:py-20">
+    <div
+      ref={rowRef}
+      className={`relative py-20 md:py-36 ${
+        index > 0 ? "border-t border-border/30" : ""
+      }`}
+    >
       {/* Row atmosphere — each project enters its own world */}
       <div
         aria-hidden
