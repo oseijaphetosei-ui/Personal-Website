@@ -32,7 +32,9 @@ export function Nav() {
           }
         });
       },
-      { threshold: 0.4, rootMargin: "-80px 0px -40% 0px" }
+      // Low threshold: tall pinned sections (Experience ≈ 460vh) can never
+      // reach high visibility ratios, so 0.4 would never fire for them.
+      { threshold: 0.15, rootMargin: "-80px 0px -40% 0px" }
     );
 
     const sections = document.querySelectorAll("section[id]");
@@ -75,24 +77,6 @@ export function Nav() {
               : "glass border-border/40 shadow-md shadow-black/[0.04]"
           )}
         >
-          {/* Logo */}
-          <motion.a
-            href="#home"
-            className="flex items-center gap-2 pl-1 pr-2"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-emerald to-accent-indigo flex items-center justify-center">
-              <span className="text-white text-[11px] font-display font-bold tracking-tight">
-                OJ
-              </span>
-            </div>
-            <span className="font-display font-semibold text-text-primary text-sm hidden xl:block">
-              {siteConfig.shortName}
-            </span>
-          </motion.a>
-
           {/* Desktop links */}
           <nav className="hidden md:flex items-center">
             {navLinks.map((link) => (
@@ -128,9 +112,9 @@ export function Nav() {
             download
             className={cn(
               "hidden md:inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-sm font-medium",
-              "bg-accent-emerald text-white shadow-sm",
-              "hover:brightness-110 hover:shadow-md hover:shadow-accent-emerald/20",
-              "transition-all duration-200"
+              "bg-surface-alt border border-border text-text-secondary",
+              "hover:text-text-primary hover:border-border/80",
+              "transition-colors duration-200"
             )}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
@@ -210,7 +194,7 @@ export function Nav() {
                   href={siteConfig.resume}
                   download
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium bg-accent-emerald text-white"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium bg-surface-alt border border-border text-text-secondary hover:text-text-primary transition-colors"
                 >
                   <Download size={13} />
                   Download Resume
