@@ -189,7 +189,7 @@ export function Experience() {
         <p className="section-label mb-3">02 · Where I&apos;ve Built</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
-          style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
+          style={{ fontSize: "clamp(2rem, 3.6vw, 3.2rem)" }}
         >
           Where I&apos;ve built &{" "}
           <span className="gradient-text">shipped.</span>

@@ -20,7 +20,7 @@ export function Leadership() {
         <p className="section-label mb-3">06 · Beyond the Code</p>
         <h2
           className="font-display font-bold text-text-primary leading-tight"
-          style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
+          style={{ fontSize: "clamp(2rem, 3.6vw, 3.2rem)" }}
         >
           Beyond the{" "}
           <span className="gradient-text">code.</span>

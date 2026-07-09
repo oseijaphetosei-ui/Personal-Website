@@ -68,7 +68,14 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
     scene.environment = envTexture;
     pmrem.dispose();
 
-    // ── Glass crystal ────────────────────────────────────────────────────────
+    // ── Glass crystal — Liquid Aurora Glass material ─────────────────────────
+    // Same geometry, same mesh. Only the material changes: flat shading turns
+    // every facet into a distinct sparkling plane; iridescence/sheen/clearcoat
+    // are native MeshPhysicalMaterial properties (cheap, real PBR) driving the
+    // angle-dependent color shift and polish; a small onBeforeCompile hook adds
+    // the slow-drifting aurora hue suspended inside the glass itself.
+    const auroraUniforms = { uTime: { value: 0 } };
+
     const crystal = new THREE.Mesh(
       new THREE.IcosahedronGeometry(1.55, 2),
       new THREE.MeshPhysicalMaterial({
@@ -77,11 +84,67 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
         metalness: 0.0,
         thickness: 0.5,
         ior: 1.6,
-        color: new THREE.Color("#dffff5"),
+        color: new THREE.Color("#eef6ff"),
         envMapIntensity: 1,
         transparent: true,
+        flatShading: true,
+
+        iridescence: 1.0,
+        iridescenceIOR: 1.3,
+        iridescenceThicknessRange: [120, 420],
+
+        sheen: 0.45,
+        sheenColor: new THREE.Color("#a78bfa"),
+        sheenRoughness: 0.35,
+
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.12,
+
+        attenuationColor: new THREE.Color("#38bdf8"),
+        attenuationDistance: 1.1,
       })
     );
+
+    crystal.material.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = auroraUniforms.uTime;
+
+      shader.vertexShader = shader.vertexShader
+        .replace("#include <common>", `#include <common>\nvarying vec3 vAuroraNormal;`)
+        .replace(
+          "#include <beginnormal_vertex>",
+          `#include <beginnormal_vertex>\nvAuroraNormal = objectNormal;`
+        );
+
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+          uniform float uTime;
+          varying vec3 vAuroraNormal;
+
+          // Hue is confined to cyan → blue → indigo → violet → magenta → soft
+          // pink and back — never crosses into red/orange/yellow/green.
+          vec3 auroraHSL(float hue, float sat, float light) {
+            vec3 rgb = clamp(abs(mod(hue * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+            return light + sat * (rgb - 0.5) * (1.0 - abs(2.0 * light - 1.0));
+          }`
+        )
+        .replace(
+          "#include <dithering_fragment>",
+          `
+          // Liquid aurora suspended inside the crystal — phase depends on the
+          // object-space normal (each facet reads a slightly different hue)
+          // plus an extremely slow time drift, never on the geometry itself.
+          float auroraPhase = sin(dot(normalize(vAuroraNormal), vec3(0.5, 0.7, 0.4)) * 3.14159 + uTime * 0.045);
+          float auroraHue = mix(0.47, 0.90, 0.5 + 0.5 * auroraPhase);
+          vec3 aurora = auroraHSL(auroraHue, 0.62, 0.58);
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, aurora, 0.22);
+          #include <dithering_fragment>`
+        );
+
+      crystal.userData.shader = shader;
+    };
+
     scene.add(crystal);
 
     // ── Outer wireframe shells ───────────────────────────────────────────────
@@ -126,7 +189,7 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
 
     // ── Lights ───────────────────────────────────────────────────────────────
     scene.add(new THREE.AmbientLight(0xffffff, 0.08));
-    const light1 = new THREE.PointLight(0x10b981, 3.5, 14);
+    const light1 = new THREE.PointLight(0x22d3ee, 3.5, 14);
     light1.position.set(4, 4, 4);
     scene.add(light1);
     const light2 = new THREE.PointLight(0x6366f1, 2.0, 12);
@@ -165,6 +228,10 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
+
+      if (crystal.userData.shader) {
+        crystal.userData.shader.uniforms.uTime.value = t;
+      }
 
       // Auto rotation
       crystal.rotation.x = t * 0.08;

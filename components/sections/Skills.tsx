@@ -1,131 +1,150 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Code2, Layout, Cpu, Server, Wrench, Telescope } from "lucide-react";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Telescope } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
-import { skills, exploringSkills } from "@/lib/data";
-import { fadeUp, staggerContainer } from "@/lib/animations";
+import { capabilities, exploringSkills, type Capability } from "@/lib/data";
+import { fadeUp } from "@/lib/animations";
 
-const categories = [
-  {
-    key: "Languages",
-    icon: Code2,
-    accent: "emerald" as const,
-    description: "What I write in daily",
-  },
-  {
-    key: "Frontend",
-    icon: Layout,
-    accent: "indigo" as const,
-    description: "How I build interfaces",
-  },
-  {
-    key: "AI & Data",
-    icon: Cpu,
-    accent: "emerald" as const,
-    description: "Where I'm most excited",
-  },
-  {
-    key: "Backend & APIs",
-    icon: Server,
-    accent: "indigo" as const,
-    description: "What powers the products",
-  },
-  {
-    key: "Tools",
-    icon: Wrench,
-    accent: "emerald" as const,
-    description: "How I ship and collaborate",
-  },
-] as const;
-
+const EASE = [0.21, 0.47, 0.32, 0.98] as const;
 const ENTER_SPRING = { type: "spring", stiffness: 60, damping: 20 } as const;
-const CHIP_SPRING  = { type: "spring", stiffness: 400, damping: 25 } as const;
 
-function SkillCard({
-  cat,
-  items,
-  index,
-}: {
-  cat: (typeof categories)[number];
-  items: readonly string[];
-  index: number;
-}) {
+/**
+ * One capability is one scene: a large title + description, then a row of
+ * interactive tech chips. Nothing about project evidence is shown until a
+ * visitor hovers, focuses, or taps a chip — progressive disclosure, not a
+ * wall of badges.
+ */
+function CapabilityScene({ cap, index }: { cap: Capability; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px 0px" });
+  const isInView = useInView(ref, { once: true, margin: "-100px 0px" });
+  const [active, setActive] = useState<string | null>(null);
 
-  const isEmerald = cat.accent === "emerald";
+  const isEmerald = cap.accent === "emerald";
   const accentRGB = isEmerald ? "var(--emerald)" : "var(--indigo)";
-  const Icon = cat.icon;
+  const activeTech = cap.tech.find((t) => t.name === active) ?? null;
+
+  const clear = (name: string) =>
+    setActive((prev) => (prev === name ? null : prev));
+  const toggle = (name: string) =>
+    setActive((prev) => (prev === name ? null : name));
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, y: 22, scale: 0.98 }}
-      animate={
-        isInView
-          ? { opacity: 1, y: 0, scale: 1, transition: { ...ENTER_SPRING, delay: index * 0.08 } }
-          : {}
-      }
-      className=""
+      className={`relative py-12 md:py-14 ${index > 0 ? "border-t border-border/40" : ""}`}
     >
-      <motion.div
-        className="group relative h-full rounded-2xl p-5 border bg-surface transition-colors duration-300 hover:border-border/70"
-        style={{ borderColor: "rgb(var(--border) / 0.5)" }}
-        whileHover={{ y: -2, boxShadow: "0 8px 32px -8px rgba(0,0,0,0.12)" }}
-        transition={CHIP_SPRING}
-      >
-        {/* Subtle accent top bar */}
-        <div
-          className="absolute top-0 inset-x-0 h-[1.5px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ background: `linear-gradient(90deg, rgb(${accentRGB} / 0.6), transparent 60%)` }}
-        />
-
-        {/* Category header */}
-        <div className="flex items-center gap-2.5 mb-4">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center border"
-            style={{
-              background: `rgb(${accentRGB} / 0.07)`,
-              borderColor: `rgb(${accentRGB} / 0.18)`,
-            }}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+        {/* Left — index, title, description */}
+        <motion.div
+          className="lg:col-span-4 flex gap-4"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ ...ENTER_SPRING, delay: 0.05 }}
+        >
+          <span
+            className="font-mono text-xs font-semibold tracking-[0.2em] shrink-0 pt-1.5"
+            style={{ color: `rgb(${accentRGB} / 0.55)` }}
           >
-            <Icon size={13} style={{ color: `rgb(${accentRGB})` }} />
-          </div>
+            {String(index + 1).padStart(2, "0")}
+          </span>
           <div>
             <h3
-              className="text-[10px] font-mono font-semibold tracking-[0.18em] uppercase leading-none"
-              style={{ color: `rgb(${accentRGB})` }}
+              className="font-display font-bold text-text-primary leading-tight mb-2"
+              style={{ fontSize: "clamp(1.5rem, 2.4vw, 1.9rem)" }}
             >
-              {cat.key}
+              {cap.title}
             </h3>
-            <p className="text-[10px] text-text-secondary/45 font-mono mt-0.5 leading-none">
-              {cat.description}
+            <p className="text-text-secondary text-sm leading-relaxed max-w-sm">
+              {cap.description}
             </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Skill chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {items.map((skill) => (
-            <motion.span
-              key={skill}
-              className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-surface-alt text-text-secondary border border-border/60 cursor-default select-none"
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: `rgb(${accentRGB} / 0.07)`,
-                color: `rgb(${accentRGB})`,
-                borderColor: `rgb(${accentRGB} / 0.22)`,
-              }}
-              transition={CHIP_SPRING}
-            >
-              {skill}
-            </motion.span>
-          ))}
-        </div>
-      </motion.div>
-    </motion.div>
+        {/* Right — interactive tech chips + evidence reveal */}
+        <motion.div
+          className="lg:col-span-8"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ ...ENTER_SPRING, delay: 0.15 }}
+        >
+          <div className="flex flex-wrap gap-2">
+            {cap.tech.map((t, ti) => (
+              <motion.button
+                key={t.name}
+                type="button"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{
+                  delay: 0.25 + ti * 0.05,
+                  type: "spring",
+                  stiffness: 350,
+                  damping: 22,
+                }}
+                onMouseEnter={() => setActive(t.name)}
+                onFocus={() => setActive(t.name)}
+                onMouseLeave={() => clear(t.name)}
+                onBlur={() => clear(t.name)}
+                onClick={() => toggle(t.name)}
+                aria-pressed={active === t.name}
+                className="px-3.5 py-2 rounded-full text-sm font-medium border transition-colors cursor-pointer select-none min-h-[44px]"
+                style={
+                  active === t.name
+                    ? {
+                        background: `rgb(${accentRGB} / 0.1)`,
+                        borderColor: `rgb(${accentRGB} / 0.35)`,
+                        color: `rgb(${accentRGB})`,
+                      }
+                    : {
+                        background: "rgb(var(--surface-alt))",
+                        borderColor: "rgb(var(--border) / 0.6)",
+                        color: "rgb(var(--text-secondary))",
+                      }
+                }
+              >
+                {t.name}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Evidence reveal — only appears once a chip is engaged */}
+          <div className="min-h-[2.75rem] mt-3">
+            <AnimatePresence mode="wait">
+              {activeTech && (
+                <motion.div
+                  key={activeTech.name}
+                  layout
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.22, ease: EASE }}
+                  role="status"
+                  aria-live="polite"
+                  className="flex flex-wrap items-center gap-2"
+                >
+                  <span className="text-text-secondary/45 font-mono text-[10px] uppercase tracking-wider shrink-0">
+                    Used in
+                  </span>
+                  {activeTech.usedIn.map((u) => (
+                    <span
+                      key={u}
+                      className="px-2.5 py-1 rounded-full text-xs font-medium"
+                      style={{
+                        background: `rgb(${accentRGB} / 0.06)`,
+                        color: `rgb(${accentRGB})`,
+                      }}
+                    >
+                      {u}
+                    </span>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -136,75 +155,50 @@ export function Skills() {
   return (
     <SectionWrapper id="skills" atmosphere="indigo">
       {/* Header */}
-      <motion.div variants={fadeUp} className="mb-14">
-        <p className="section-label mb-3">05 · The Toolkit</p>
+      <motion.div variants={fadeUp} className="mb-6">
+        <p className="section-label mb-3">05 · Capabilities</p>
         <h2
-          className="font-display font-bold text-text-primary leading-tight"
-          style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
+          className="font-display font-bold text-text-primary leading-tight mb-3"
+          style={{ fontSize: "clamp(2rem, 3.6vw, 3.2rem)" }}
         >
-          Tools of the{" "}
-          <span className="gradient-text">craft.</span>
+          What I{" "}
+          <span className="gradient-text">build.</span>
         </h2>
+        <p className="text-text-secondary text-sm max-w-md">
+          Five capabilities. Hover or tap any technology to see the real project behind it.
+        </p>
       </motion.div>
 
-      {/* Skill cards — 2 cols sm, 3 cols lg */}
-      <motion.div
-        variants={staggerContainer}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4"
-      >
-        {categories.map((cat, i) => {
-          const items = skills[cat.key as keyof typeof skills] ?? [];
-          return (
-            <SkillCard key={cat.key} cat={cat} items={items} index={i} />
-          );
-        })}
-      </motion.div>
+      {/* Capability scenes — one at a time, each earning the next */}
+      <div className="flex flex-col">
+        {capabilities.map((cap, i) => (
+          <CapabilityScene key={cap.id} cap={cap} index={i} />
+        ))}
+      </div>
 
-      {/* Currently Exploring — full-width banner */}
+      {/* Currently Exploring — quiet epilogue, not a boxed banner */}
       <motion.div
         ref={exploringRef}
-        initial={{ opacity: 0, y: 18 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={exploringInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.15 }}
-        className="relative rounded-2xl border border-accent-indigo/15 bg-accent-indigo/[0.03] p-5 overflow-hidden"
+        transition={{ duration: 0.5, ease: EASE }}
+        className="pt-10 mt-2 border-t border-border/40 flex flex-col sm:flex-row sm:items-center gap-3"
       >
-        {/* Background pulse */}
-        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-accent-indigo/[0.04] blur-3xl pointer-events-none" />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-accent-indigo/08 border border-accent-indigo/20">
-              <Telescope size={13} className="text-accent-indigo" />
-            </div>
-            <div>
-              <p className="text-[10px] font-mono font-semibold tracking-[0.18em] uppercase text-accent-indigo leading-none">
-                Currently Exploring
-              </p>
-              <p className="text-[10px] text-text-secondary/45 font-mono mt-0.5 leading-none">
-                What&apos;s next on my radar
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-1.5">
-            {exploringSkills.map((skill, i) => (
-              <motion.span
-                key={skill}
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={exploringInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{
-                  delay: 0.2 + i * 0.06,
-                  type: "spring",
-                  stiffness: 350,
-                  damping: 22,
-                }}
-                className="px-2.5 py-1 rounded-lg text-[11px] font-medium text-accent-indigo/80 border border-accent-indigo/18 bg-accent-indigo/[0.05] cursor-default select-none"
-                whileHover={{ scale: 1.05, backgroundColor: "rgb(var(--indigo) / 0.10)" }}
-              >
-                {skill}
-              </motion.span>
-            ))}
-          </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Telescope size={13} className="text-accent-indigo/70" />
+          <span className="text-text-secondary/50 font-mono text-[10px] uppercase tracking-[0.15em]">
+            Currently exploring
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {exploringSkills.map((skill) => (
+            <span
+              key={skill}
+              className="text-xs text-text-secondary/60 font-medium after:content-['·'] after:ml-1.5 after:text-border last:after:content-none"
+            >
+              {skill}
+            </span>
+          ))}
         </div>
       </motion.div>
     </SectionWrapper>

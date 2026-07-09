@@ -10,16 +10,16 @@ import { AIShowcase } from "@/components/sections/AIShowcase";
 import { Contact } from "@/components/sections/Contact";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AmbientBackground } from "@/components/effects/AmbientBackground";
-import { StarBackground } from "@/components/effects/StarBackground";
+import { SmoothScroll } from "@/components/effects/SmoothScroll";
 import { ScrollProgress } from "@/components/effects/ScrollProgress";
 
 export default function Home() {
   return (
     <>
       <CustomCursor />
+      <SmoothScroll />
       <ScrollProgress />
       <AmbientBackground />
-      <StarBackground />
       <Nav />
       <main>
         <Hero />

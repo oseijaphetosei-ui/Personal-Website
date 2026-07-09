@@ -178,21 +178,89 @@ export const projects = [
   },
 ];
 
-export const skills = {
-  Languages: ["Python", "TypeScript", "JavaScript", "Java", "Haskell", "SQL"],
-  Frontend: ["React", "Next.js", "React Native", "Tailwind CSS", "Framer Motion", "Three.js"],
-  "Backend & APIs": ["Node.js", "FastAPI", "Firebase", "REST APIs", "PostgreSQL"],
-  "AI & Data": [
-    "Gemini API",
-    "Edge AI",
-    "scikit-learn",
-    "pandas",
-    "NumPy",
-    "Streamlit",
-    "LangChain",
-  ],
-  Tools: ["Git", "GitHub", "Figma", "pytest", "JUnit", "Vercel"],
+type CapabilityTech = {
+  name: string;
+  usedIn: string[];
 };
+
+export type Capability = {
+  id: string;
+  title: string;
+  description: string;
+  accent: "emerald" | "indigo";
+  tech: CapabilityTech[];
+};
+
+export const capabilities: Capability[] = [
+  {
+    id: "ai",
+    title: "Artificial Intelligence",
+    description:
+      "Building intelligent assistants and real-time LLM experiences that feel considered, not gimmicky.",
+    accent: "emerald",
+    tech: [
+      { name: "Gemini Live API", usedIn: ["PathSense — real-time camera guidance for navigation"] },
+      { name: "Edge AI", usedIn: ["AASS — 1K+ events/sec, 40% fewer false positives"] },
+      { name: "LangChain", usedIn: ["Scripture AI — conversational Bible study"] },
+      { name: "Prompt Engineering", usedIn: ["PathSense", "Scripture AI"] },
+      { name: "Python", usedIn: ["AASS", "PathSense", "UCLA DataFest"] },
+    ],
+  },
+  {
+    id: "fullstack",
+    title: "Full-Stack Engineering",
+    description:
+      "Building scalable web applications, APIs, and real-time systems end to end — not just the parts that are fun.",
+    accent: "indigo",
+    tech: [
+      { name: "React", usedIn: ["PathSense", "AASS security dashboards"] },
+      { name: "TypeScript", usedIn: ["PathSense", "AASS", "This portfolio"] },
+      { name: "FastAPI", usedIn: ["AASS — event-driven pipelines at 1K+ events/sec"] },
+      { name: "Firebase", usedIn: ["PathSense — crowd-sourced accessibility data", "Scripture AI"] },
+      { name: "Next.js", usedIn: ["This portfolio — japhetsweb.dev"] },
+    ],
+  },
+  {
+    id: "mobile",
+    title: "Mobile Development",
+    description:
+      "Designing polished, native-feeling mobile experiences people actually want to open every day.",
+    accent: "emerald",
+    tech: [
+      { name: "React Native", usedIn: ["Scripture AI — iOS & Android"] },
+      { name: "Expo", usedIn: ["Scripture AI"] },
+      { name: "Mobile UI/UX", usedIn: ["Scripture AI — 'Talk to Scripture' interaction design"] },
+      { name: "Firebase", usedIn: ["Scripture AI — auth & sync"] },
+    ],
+  },
+  {
+    id: "data",
+    title: "Data Science & Analytics",
+    description:
+      "Turning raw, messy data into insight — pipelines, visualization, and decisions people can act on.",
+    accent: "indigo",
+    tech: [
+      { name: "Pandas & SQL", usedIn: ["UCLA DataFest — 1M+ leasing records, 35% faster prep"] },
+      { name: "NumPy / SciPy", usedIn: ["Container Design Optimizer"] },
+      { name: "Streamlit", usedIn: ["Container Design Optimizer — visualization-driven UI"] },
+      { name: "pytest", usedIn: ["Container Design Optimizer — 100% test coverage"] },
+      { name: "Data Visualization", usedIn: ["UCLA DataFest — commercial leasing dashboards"] },
+    ],
+  },
+  {
+    id: "product",
+    title: "Product & Engineering Craft",
+    description:
+      "Building products that are intuitive and accessible, not just functional — the details are the job.",
+    accent: "emerald",
+    tech: [
+      { name: "Accessibility", usedIn: ["PathSense — built for mobility-impaired users"] },
+      { name: "Design Systems", usedIn: ["This portfolio — full motion & component system"] },
+      { name: "Framer Motion", usedIn: ["This portfolio — every interaction and transition"] },
+      { name: "Performance", usedIn: ["AASS — ~15% latency reduction", "Pomona ITS — 40% fewer tickets"] },
+    ],
+  },
+];
 
 export const exploringSkills = [
   "Rust",

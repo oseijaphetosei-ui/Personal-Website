@@ -207,7 +207,7 @@ export function AIShowcase() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <h2
             className="font-display font-bold text-text-primary leading-tight"
-            style={{ fontSize: "clamp(1.8rem, 3vw, 2.6rem)" }}
+            style={{ fontSize: "clamp(2rem, 3.6vw, 3.2rem)" }}
           >
             Building with{" "}
             <span className="gradient-text">intelligence.</span>

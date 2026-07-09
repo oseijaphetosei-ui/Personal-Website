@@ -286,29 +286,22 @@
     radial-gradient(ellipse 45% 55% at 92% 85%, rgb(var(--indigo) / 0.045) 0%, transparent 60%);
 }
 
-/* ── Star background (dark mode) ─────────────────────────────────────────── */
-@keyframes star-float {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-110vh); }
+/* ── Lenis smooth scroll ─────────────────────────────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
 }
 
-@keyframes star-twinkle {
-  0%, 100% { opacity: 0.85; }
-  50%       { opacity: 0.12; }
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
-.star-particle {
-  position: absolute;
-  border-radius: 50%;
-  background-color: rgb(220 230 255 / 0.85);
-  animation-name: star-float, star-twinkle;
-  animation-timing-function: linear, ease-in-out;
-  animation-iteration-count: infinite, infinite;
-  will-change: transform;
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
-.star-particle.star-bright {
-  box-shadow: 0 0 5px 1px rgb(200 215 255 / 0.45);
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 /* Reduced motion — disable heavy animations */
