@@ -174,7 +174,7 @@ export const projects = [
     accent: "emerald" as const,
     featured: true,
     image: null as string | null,
-    demo: "/scriptureai-demo.mp4" as string | null,
+    demo: null as string | null,
   },
 ];
 
