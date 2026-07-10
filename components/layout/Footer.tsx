@@ -15,7 +15,9 @@ export function Footer() {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <footer className="border-t border-border bg-surface-alt/40">
+    // No border, no band — the footer emerges from a gradual gradient fade
+    // (light mode) or the shared dark atmosphere (dark mode).
+    <footer className="bg-gradient-to-b from-transparent to-surface-alt/50 dark:to-transparent">
       <div className="container-wide py-10">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           {/* Left: branding */}
@@ -70,7 +72,7 @@ export function Footer() {
           </motion.button>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/50 text-center">
+        <div className="mt-10 text-center">
           <p className="text-[11px] text-text-secondary/60 font-mono tracking-wide">
             Designed & built by {siteConfig.name}
           </p>

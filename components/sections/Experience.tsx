@@ -289,7 +289,7 @@ export function Experience() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="experience" className="relative bg-surface-alt/30">
+    <section id="experience" className="relative">
       <div aria-hidden className="atmosphere atmosphere-indigo" />
       <div className="relative">
         {reduceMotion ? <StaticBook /> : <CinematicBook />}

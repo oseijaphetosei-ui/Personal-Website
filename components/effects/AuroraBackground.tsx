@@ -11,7 +11,7 @@ export function AuroraBackground() {
     <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Emerald field — upper left */}
       <div
-        className="aurora-blob aurora-1 opacity-60 dark:opacity-45"
+        className="aurora-blob aurora-1 opacity-60 dark:opacity-60"
         style={{
           top: "-12%",
           left: "-8%",
@@ -26,7 +26,7 @@ export function AuroraBackground() {
 
       {/* Indigo field — right center */}
       <div
-        className="aurora-blob aurora-2 opacity-60 dark:opacity-50"
+        className="aurora-blob aurora-2 opacity-60 dark:opacity-65"
         style={{
           top: "18%",
           right: "-14%",
@@ -41,7 +41,7 @@ export function AuroraBackground() {
 
       {/* Teal bridge — lower center, ties the two fields together */}
       <div
-        className="aurora-blob aurora-3 opacity-50 dark:opacity-35"
+        className="aurora-blob aurora-3 opacity-50 dark:opacity-45"
         style={{
           bottom: "-18%",
           left: "28%",

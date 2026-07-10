@@ -80,13 +80,23 @@ export function Hero() {
 
         {/* ── Scene 1 · Hello ─────────────────────────────────────────── */}
         <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none px-6"
+          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6"
           style={{ opacity: greetOpacity, scale: greetScale, y: greetY }}
         >
+          {/* Whisper label — sets the stage before the greeting lands */}
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.8, ease: EASE }}
+            className="font-mono text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-text-secondary/45 mb-8"
+          >
+            Osei Japhet Acquah · Digital Portfolio
+          </motion.span>
+
           <motion.h1
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ delay: 0.3, duration: 0.9, ease: EASE }}
+            transition={{ delay: 0.4, duration: 0.9, ease: EASE }}
             className="font-display font-bold tracking-tight text-text-primary text-center"
             style={{ fontSize: "clamp(3.2rem, 9vw, 8rem)" }}
           >

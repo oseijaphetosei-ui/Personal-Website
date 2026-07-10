@@ -221,6 +221,19 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
     let smoothX = 0;
     let smoothY = 0;
 
+    // ── Press-and-hold delight ───────────────────────────────────────────────
+    // Holding the pointer down anywhere over the hero makes the aurora inside
+    // the crystal flow ~3× faster, easing back on release. A quiet reward for
+    // exploration — geometry, rotation, and material stay untouched.
+    let auroraTime = 0;
+    let auroraSpeed = 1;
+    let auroraTarget = 1;
+    const onPress = () => { auroraTarget = 3.2; };
+    const onRelease = () => { auroraTarget = 1; };
+    window.addEventListener("pointerdown", onPress);
+    window.addEventListener("pointerup", onRelease);
+    window.addEventListener("pointercancel", onRelease);
+
     // ── Animation loop ───────────────────────────────────────────────────────
     // Fully stopped (no rAF at all) while the hero is scrolled out of view —
     // otherwise the sphere renders forever underneath the rest of the page.
@@ -234,10 +247,14 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
         return;
       }
       animId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      // getDelta() also advances clock.elapsedTime — read both from one call
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const t = clock.elapsedTime;
 
+      auroraSpeed += (auroraTarget - auroraSpeed) * 0.055;
+      auroraTime += dt * auroraSpeed;
       if (crystal.userData.shader) {
-        crystal.userData.shader.uniforms.uTime.value = t;
+        crystal.userData.shader.uniforms.uTime.value = auroraTime;
       }
 
       // Auto rotation
@@ -280,6 +297,9 @@ export function HeroScene({ mouseRef, className }: HeroSceneProps) {
 
     return () => {
       cancelAnimationFrame(animId);
+      window.removeEventListener("pointerdown", onPress);
+      window.removeEventListener("pointerup", onRelease);
+      window.removeEventListener("pointercancel", onRelease);
       visibilityObserver.disconnect();
       resizeObserver.disconnect();
       renderer.dispose();

@@ -33,7 +33,7 @@ function CapabilityScene({ cap, index }: { cap: Capability; index: number }) {
   return (
     <div
       ref={ref}
-      className={`relative py-12 md:py-14 ${index > 0 ? "border-t border-border/40" : ""}`}
+      className="relative py-12 md:py-16"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
         {/* Left — index, title, description */}
@@ -182,7 +182,7 @@ export function Skills() {
         initial={{ opacity: 0, y: 14 }}
         animate={exploringInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.5, ease: EASE }}
-        className="pt-10 mt-2 border-t border-border/40 flex flex-col sm:flex-row sm:items-center gap-3"
+        className="pt-12 mt-2 flex flex-col sm:flex-row sm:items-center gap-3"
       >
         <div className="flex items-center gap-2 shrink-0">
           <Telescope size={13} className="text-accent-indigo/70" />

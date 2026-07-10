@@ -51,12 +51,9 @@ function FeatureProject({
   };
 
   return (
-    <div
-      ref={rowRef}
-      className={`relative py-20 md:py-36 ${
-        index > 0 ? "border-t border-border/30" : ""
-      }`}
-    >
+    // Isolation comes from generous vertical space + each row's own light —
+    // no divider lines.
+    <div ref={rowRef} className="relative py-20 md:py-36">
       {/* Row atmosphere — each project enters its own world */}
       <div
         aria-hidden

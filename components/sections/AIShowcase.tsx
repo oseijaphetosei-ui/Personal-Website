@@ -200,7 +200,7 @@ function AICard({
 
 export function AIShowcase() {
   return (
-    <SectionWrapper id="ai" className="bg-surface-alt/30" atmosphere="emerald">
+    <SectionWrapper id="ai" atmosphere="emerald">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-14">
         <p className="section-label mb-3">04 · AI Products</p>
@@ -233,9 +233,7 @@ export function AIShowcase() {
         variants={fadeUp}
         className="mt-10 flex items-center justify-center gap-3 text-xs font-mono text-text-secondary/40 tracking-wide"
       >
-        <div className="h-px w-12 bg-border/60" />
         <span>Gemini · Edge AI · LLMs · Real-world deployment</span>
-        <div className="h-px w-12 bg-border/60" />
       </motion.div>
     </SectionWrapper>
   );
