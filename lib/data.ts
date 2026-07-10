@@ -150,14 +150,14 @@ export const projects = [
       "A web-based optimization application for material and packaging design companies to minimize resource waste. Built with a modular Python codebase using OOP principles, a comprehensive test suite achieving 100% coverage, and a clean visualization-driven Streamlit interface.",
     stack: ["Python", "NumPy", "SciPy", "pytest", "Streamlit", "OOP"],
     links: {
-      live: null as string | null,
+      live: "https://container-optimization-project-wzg6za6grqwqimo8ekq9n2.streamlit.app/" as string | null,
       github: null as string | null,
     },
     award: null,
     accent: "indigo" as const,
     featured: true,
     image: null as string | null,
-    demo: null as string | null,
+    demo: "/container-demo.mp4" as string | null,
   },
   {
     id: "scripture-ai",
