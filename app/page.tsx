@@ -12,7 +12,6 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AmbientBackground } from "@/components/effects/AmbientBackground";
 import { DarkAtmosphere } from "@/components/effects/DarkAtmosphere";
 import { CinematicVeil } from "@/components/effects/CinematicVeil";
-import { AmbienceAudio } from "@/components/effects/AmbienceAudio";
 import { SmoothScroll } from "@/components/effects/SmoothScroll";
 import { ScrollProgress } from "@/components/effects/ScrollProgress";
 
@@ -25,7 +24,6 @@ export default function Home() {
       <AmbientBackground />
       <DarkAtmosphere />
       <CinematicVeil />
-      <AmbienceAudio />
       <Nav />
       <main>
         <Hero />
