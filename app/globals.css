@@ -4,344 +4,60 @@
 
 @layer base {
   :root {
-    --background: 250 250 250;
-    --surface: 255 255 255;
-    --surface-alt: 244 244 245;
-    --border: 228 228 231;
-    --text-primary: 10 10 10;
-    --text-secondary: 82 82 91;
-    --emerald: 5 150 105;
-    --indigo: 79 70 229;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --primary: 240 6% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 40%;
+    --accent: 234 62% 52%;
+    --accent-foreground: 0 0% 100%;
+    --border: 240 6% 88%;
+    --ring: 234 62% 52%;
+    --radius: 0.5rem;
   }
 
-  .dark {
-    /* Layered dark system: deep onyx base, each surface tier a visibly
-       elevated step above the one below — depth from layering, not lines. */
-    --background: 6 6 10;
-    --surface: 13 13 20;
-    --surface-alt: 20 20 30;
-    --border: 36 36 50;
-    /* Soft white, not full white — refined against the dark environment */
-    --text-primary: 237 237 242;
-    --text-secondary: 162 162 176;
-    --emerald: 16 185 129;
-    --indigo: 109 112 245;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 240 10% 5%;
+      --foreground: 0 0% 96%;
+      --card: 240 9% 8%;
+      --card-foreground: 0 0% 96%;
+      --primary: 0 0% 96%;
+      --primary-foreground: 240 6% 10%;
+      --secondary: 240 6% 14%;
+      --secondary-foreground: 0 0% 96%;
+      --muted: 240 6% 14%;
+      --muted-foreground: 240 5% 65%;
+      --accent: 234 75% 68%;
+      --accent-foreground: 240 10% 5%;
+      --border: 240 6% 20%;
+      --ring: 234 75% 68%;
+    }
   }
 
   html {
-    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-text-primary font-sans;
-    transition: background-color 0.35s ease, color 0.35s ease;
+    @apply bg-background text-foreground font-sans;
   }
 
   ::selection {
-    background: rgba(16, 185, 129, 0.2);
-    color: inherit;
+    background: hsl(var(--accent) / 0.25);
   }
 
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgb(var(--border));
-    border-radius: 99px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--text-secondary) / 0.5);
-  }
-}
-
-@layer utilities {
-  .gradient-text {
-    background: linear-gradient(135deg, rgb(var(--emerald)) 0%, rgb(var(--indigo)) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .gradient-text-reverse {
-    background: linear-gradient(135deg, rgb(var(--indigo)) 0%, rgb(var(--emerald)) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Base glass — adapts to theme */
-  .glass {
-    background: rgb(var(--surface) / 0.65);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid rgb(var(--border) / 0.55);
-  }
-
-  /* Premium glass card */
-  .glass-card {
-    background: rgb(var(--surface) / 0.5);
-    backdrop-filter: blur(24px) saturate(1.5);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    border: 1px solid rgb(var(--border) / 0.45);
-    box-shadow:
-      0 4px 32px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
-  /* Dark-mode glass — frosted, visionOS-inspired: a touch more body,
-     a brighter top edge where environment light would catch the pane. */
-  .dark .glass {
-    background: rgb(16 16 24 / 0.6);
-    border-color: rgb(255 255 255 / 0.08);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
-  }
-
-  .dark .glass-card {
-    background: rgb(15 15 23 / 0.6);
-    border-color: rgb(255 255 255 / 0.07);
-    box-shadow:
-      0 8px 40px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  /* Dark-only deep glass */
-  .glass-dark {
-    background: rgb(8 8 8 / 0.75);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgb(255 255 255 / 0.06);
-  }
-
-  .dot-grid {
-    background-image: radial-gradient(
-      circle,
-      rgb(var(--text-secondary) / 0.1) 1px,
-      transparent 1px
-    );
-    background-size: 28px 28px;
-  }
-
-  .noise-overlay::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    opacity: 0.4;
-  }
-
-  .glow-emerald {
-    box-shadow: 0 0 40px -6px rgb(var(--emerald) / 0.28);
-  }
-
-  .glow-indigo {
-    box-shadow: 0 0 40px -6px rgb(var(--indigo) / 0.28);
-  }
-
-  /* Subtle emerald glow for interactive elements */
-  .glow-emerald-sm {
-    box-shadow: 0 0 20px -4px rgb(var(--emerald) / 0.2);
-  }
-
-  .section-padding {
-    @apply py-24 md:py-32;
-  }
-
-  .container-tight {
-    @apply max-w-5xl mx-auto px-6;
-  }
-
-  .container-wide {
-    @apply max-w-7xl mx-auto px-6;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .section-label {
-    @apply text-xs font-mono font-medium tracking-[0.2em] uppercase text-accent-emerald;
-  }
-
-  /* Gradient border utility */
-  .border-gradient-emerald {
-    position: relative;
-  }
-
-  .border-gradient-emerald::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      135deg,
-      rgb(var(--emerald) / 0.4),
-      rgb(var(--indigo) / 0.2),
-      transparent
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Scroll progress bar at top */
-  .scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      rgb(var(--emerald)),
-      rgb(var(--indigo))
-    );
-    transform-origin: left;
-    z-index: 9998;
-    pointer-events: none;
-  }
-}
-
-/* ── Aurora background system ────────────────────────────────────────────── */
-@keyframes aurora-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(6%, -8%) scale(1.12); }
-  66%      { transform: translate(-5%, 6%) scale(0.94); }
-}
-
-@keyframes aurora-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  40%      { transform: translate(-7%, 5%) scale(1.08); }
-  75%      { transform: translate(5%, -6%) scale(0.96); }
-}
-
-@keyframes aurora-drift-3 {
-  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50%      { transform: translate(4%, 7%) scale(1.15) rotate(8deg); }
-}
-
-.aurora-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(90px);
-  pointer-events: none;
-  will-change: transform;
-}
-
-.aurora-1 { animation: aurora-drift-1 26s ease-in-out infinite; }
-.aurora-2 { animation: aurora-drift-2 32s ease-in-out infinite; }
-.aurora-3 { animation: aurora-drift-3 38s ease-in-out infinite; }
-
-/* ── Waving hand greeting ────────────────────────────────────────────────── */
-@keyframes wave-hand {
-  0%, 60%, 100% { transform: rotate(0deg); }
-  10%           { transform: rotate(14deg); }
-  20%           { transform: rotate(-8deg); }
-  30%           { transform: rotate(14deg); }
-  40%           { transform: rotate(-4deg); }
-  50%           { transform: rotate(10deg); }
-}
-
-.wave-hand {
-  display: inline-block;
-  transform-origin: 70% 70%;
-  animation: wave-hand 2.4s ease-in-out 0.6s 2;
-}
-
-/* ── Section atmospheres — each act of the story gets its own light ──────── */
-.atmosphere {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.atmosphere-emerald::before {
-  content: "";
-  position: absolute;
-  top: -20%;
-  left: -10%;
-  width: 55%;
-  height: 70%;
-  background: radial-gradient(ellipse, rgb(var(--emerald) / 0.05) 0%, transparent 65%);
-}
-
-.atmosphere-indigo::before {
-  content: "";
-  position: absolute;
-  top: -15%;
-  right: -10%;
-  width: 55%;
-  height: 70%;
-  background: radial-gradient(ellipse, rgb(var(--indigo) / 0.05) 0%, transparent 65%);
-}
-
-.atmosphere-dual::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 45% 55% at 8% 15%, rgb(var(--emerald) / 0.045) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 55% at 92% 85%, rgb(var(--indigo) / 0.045) 0%, transparent 60%);
-}
-
-/* ── Cinematic veil: living film grain + volumetric vignette ─────────────── */
-/* Grain jitters between fixed offsets with steps(1) — classic film-grain
-   technique, transform-only so it stays on the compositor. */
-@keyframes film-grain-jitter {
-  0%, 100% { transform: translate(0, 0); }
-  20%      { transform: translate(-2%, 2%); }
-  40%      { transform: translate(2%, -1%); }
-  60%      { transform: translate(-1%, -2%); }
-  80%      { transform: translate(2%, 2%); }
-}
-
-.film-grain {
-  position: fixed;
-  inset: -50%; /* oversized so the jitter never exposes an edge */
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 256px 256px;
-  animation: film-grain-jitter 0.8s steps(1) infinite;
-  will-change: transform;
-}
-
-/* ── Lenis smooth scroll ─────────────────────────────────────────────────── */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-/* Reduced motion — disable heavy animations */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 }

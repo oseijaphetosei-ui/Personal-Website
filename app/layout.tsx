@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/data";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -28,11 +21,11 @@ export const metadata: Metadata = {
   keywords: [
     "Osei Japhet Acquah",
     "Software Engineer",
-    "AI Developer",
-    "Data Science",
+    "Software Engineering Intern",
+    "Full-Stack Developer",
     "Pomona College",
-    "Full-Stack",
     "React",
+    "TypeScript",
     "Python",
   ],
   authors: [{ name: siteConfig.name }],
@@ -56,21 +49,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
-    >
-      <body suppressHydrationWarning>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

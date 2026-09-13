@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Mail, Github, Linkedin, ArrowUpRight, Download, Copy, Check } from "lucide-react";
+import { Mail, Github, Linkedin, Download, Copy, Check } from "lucide-react";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { Button } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/data";
-import { fadeUp, staggerContainer } from "@/lib/animations";
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -19,172 +17,70 @@ export function Contact() {
   };
 
   return (
-    <SectionWrapper id="contact" atmosphere="dual">
-      {/* Soft closing light behind the final statement */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-8 -translate-x-1/2 w-[560px] h-[280px] rounded-full blur-[100px] pointer-events-none opacity-60 dark:opacity-40"
-        style={{
-          background:
-            "radial-gradient(ellipse, rgb(var(--emerald) / 0.08) 0%, rgb(var(--indigo) / 0.05) 50%, transparent 75%)",
-        }}
-      />
+    <SectionWrapper id="contact">
+      <div className="max-w-2xl">
+        <h2 className="text-2xl font-semibold tracking-tight mb-2">Contact</h2>
+        <p className="text-muted-foreground leading-relaxed mb-8">
+          I&apos;m actively seeking software engineering internships for{" "}
+          {siteConfig.availableFor}. Reach out directly, or find me below.
+        </p>
 
-      {/* Centered CTA */}
-      <motion.div
-        variants={staggerContainer}
-        className="relative text-center max-w-2xl mx-auto mb-16"
-      >
-        <motion.p variants={fadeUp} className="section-label mb-4">
-          07 · Let&apos;s Talk
-        </motion.p>
-
-        <motion.h2
-          variants={fadeUp}
-          className="font-display font-bold text-text-primary leading-tight mb-6 text-balance"
-          style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}
-        >
-          Let&apos;s build something{" "}
-          <span className="gradient-text">remarkable.</span>
-        </motion.h2>
-
-        <motion.p
-          variants={fadeUp}
-          className="text-text-secondary leading-relaxed mb-8 text-balance"
-        >
-          I&apos;m actively seeking{" "}
-          <span className="text-text-primary font-medium">
-            Software Engineering and Data Science internships
-          </span>{" "}
-          for {siteConfig.availableFor}. Whether you&apos;re a recruiter, founder, or
-          researcher — I&apos;d love to hear from you.
-        </motion.p>
-
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3"
-        >
-          <Button
-            href={`mailto:${siteConfig.email}`}
-            size="lg"
-            variant="primary"
-            icon={<Mail size={16} />}
-          >
-            Send Me an Email
+        <div className="flex flex-wrap items-center gap-3 mb-10">
+          <Button href={`mailto:${siteConfig.email}`} icon={<Mail size={16} aria-hidden />}>
+            Email Me
           </Button>
           <Button
             href={siteConfig.resume}
-            size="lg"
-            variant="ghost"
-            external
-            icon={<Download size={15} />}
+            variant="secondary"
+            icon={<Download size={15} aria-hidden />}
           >
             Download Resume
           </Button>
-        </motion.div>
-      </motion.div>
+        </div>
 
-      {/* Contact cards */}
-      <motion.div
-        variants={staggerContainer}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto"
-      >
-        {/* Email card */}
-        <motion.div
-          variants={fadeUp}
-          className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface border border-border transition-all duration-200 hover:shadow-sm hover:border-accent-emerald/30"
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald">
-              <Mail size={16} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-2 p-5 rounded-lg border border-border bg-card">
+            <div className="flex items-center gap-2">
+              <Mail size={16} className="text-accent" aria-hidden />
+              <p className="font-medium text-sm">Email</p>
             </div>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              aria-label="Open email client"
+            <p className="text-xs text-muted-foreground break-all">{siteConfig.email}</p>
+            <button
+              onClick={copyEmail}
+              className="inline-flex items-center gap-1.5 text-xs text-accent hover:opacity-80 transition-opacity mt-1"
             >
-              <ArrowUpRight size={14} className="text-text-secondary/30 group-hover:text-text-secondary/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </a>
+              {copied ? <Check size={12} aria-hidden /> : <Copy size={12} aria-hidden />}
+              {copied ? "Copied" : "Copy address"}
+            </button>
           </div>
-          <div>
-            <p className="font-medium text-sm text-text-primary">Email</p>
-            <p className="text-text-secondary text-xs mt-0.5 break-all">{siteConfig.email}</p>
-          </div>
-          <button
-            onClick={copyEmail}
-            className="flex items-center gap-1.5 text-xs text-accent-emerald/70 hover:text-accent-emerald transition-colors mt-auto"
+
+          <a
+            href={siteConfig.social.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col gap-2 p-5 rounded-lg border border-border bg-card hover:border-foreground/20 transition-colors"
           >
-            {copied ? <Check size={11} /> : <Copy size={11} />}
-            {copied ? "Copied!" : "Copy address"}
-          </button>
-        </motion.div>
-
-        {/* LinkedIn card */}
-        <motion.a
-          variants={fadeUp}
-          href={siteConfig.social.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface border border-border hover:shadow-sm hover:border-accent-indigo/30 transition-all duration-200"
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent-indigo/10 border border-accent-indigo/20 text-accent-indigo">
-              <Linkedin size={16} />
+            <div className="flex items-center gap-2">
+              <Linkedin size={16} className="text-accent" aria-hidden />
+              <p className="font-medium text-sm">LinkedIn</p>
             </div>
-            <ArrowUpRight size={14} className="text-text-secondary/30 group-hover:text-text-secondary/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-          </div>
-          <div>
-            <p className="font-medium text-sm text-text-primary">LinkedIn</p>
-            <p className="text-text-secondary text-xs mt-0.5">Connect with me</p>
-          </div>
-        </motion.a>
+            <p className="text-xs text-muted-foreground">Connect with me</p>
+          </a>
 
-        {/* GitHub card */}
-        <motion.a
-          variants={fadeUp}
-          href={siteConfig.social.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex flex-col gap-3 p-5 rounded-2xl bg-surface border border-border hover:shadow-sm hover:border-accent-emerald/30 transition-all duration-200"
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald">
-              <Github size={16} />
+          <a
+            href={siteConfig.social.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col gap-2 p-5 rounded-lg border border-border bg-card hover:border-foreground/20 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Github size={16} className="text-accent" aria-hidden />
+              <p className="font-medium text-sm">GitHub</p>
             </div>
-            <ArrowUpRight size={14} className="text-text-secondary/30 group-hover:text-text-secondary/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-          </div>
-          <div>
-            <p className="font-medium text-sm text-text-primary">GitHub</p>
-            <p className="text-text-secondary text-xs mt-0.5">View my code</p>
-          </div>
-        </motion.a>
-      </motion.div>
-
-      {/* Availability indicator */}
-      <motion.div
-        variants={fadeUp}
-        className="mt-12 flex items-center justify-center gap-2 text-sm text-text-secondary"
-      >
-        <motion.span
-          className="w-2 h-2 rounded-full bg-accent-emerald"
-          animate={{ opacity: [1, 0.3, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        Currently available for {siteConfig.availableFor} internships
-      </motion.div>
-
-      {/* Closing sign-off */}
-      <motion.p
-        variants={fadeUp}
-        className="mt-14 text-center text-xs font-mono text-text-secondary/40 tracking-[0.15em] uppercase"
-      >
-        From Kumasi to Claremont — thanks for scrolling
-      </motion.p>
+            <p className="text-xs text-muted-foreground">View my code</p>
+          </a>
+        </div>
+      </div>
     </SectionWrapper>
   );
 }

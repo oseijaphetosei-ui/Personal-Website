@@ -1,52 +1,24 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { staggerContainer } from "@/lib/animations";
 
 interface SectionWrapperProps {
   id?: string;
   children: React.ReactNode;
   className?: string;
-  innerClassName?: string;
-  tight?: boolean;
-  /** Ambient light wash giving each act of the story its own atmosphere */
-  atmosphere?: "emerald" | "indigo" | "dual";
+  border?: boolean;
 }
 
 export function SectionWrapper({
   id,
   children,
   className,
-  innerClassName,
-  tight = false,
-  atmosphere,
+  border = true,
 }: SectionWrapperProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px 0px" });
-
   return (
     <section
       id={id}
-      ref={ref}
-      className={cn("relative section-padding", className)}
+      className={cn("py-16 md:py-20", border && "border-t border-border", className)}
     >
-      {atmosphere && (
-        <div aria-hidden className={cn("atmosphere", `atmosphere-${atmosphere}`)} />
-      )}
-      <motion.div
-        className={cn(
-          "relative",
-          tight ? "container-tight" : "container-wide",
-          innerClassName
-        )}
-        variants={staggerContainer}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-      >
-        {children}
-      </motion.div>
+      <div className="max-w-content mx-auto px-6">{children}</div>
     </section>
   );
 }
