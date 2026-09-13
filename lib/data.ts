@@ -36,7 +36,7 @@ export const experiences = [
     companyShort: "AASS",
     role: "Software Engineering Intern",
     period: "May 2026 – August 2026",
-    type: "work" as const,
+    type: "internship" as const,
     award: null,
     bullets: [
       "Developed C components for production IoT security systems, implementing process management, buffered I/O, and concurrent inter-process communication across 10+ connected devices.",

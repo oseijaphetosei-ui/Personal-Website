@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/Badge";
 import { experiences } from "@/lib/data";
 
 const typeConfig = {
-  work: { icon: Briefcase, label: "Full-time" },
+  internship: { icon: Briefcase, label: "Internship" },
+  work: { icon: Briefcase, label: "Part-time" },
   hackathon: { icon: Trophy, label: "Hackathon" },
   teaching: { icon: GraduationCap, label: "Teaching" },
 };
