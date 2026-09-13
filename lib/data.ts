@@ -14,7 +14,7 @@ export const siteConfig = {
     github: "https://github.com/oseijaphetosei-ui",
     linkedin: "https://www.linkedin.com/in/japhetacquh795/",
   },
-  resume: "/Osei_Acquah_Resume.docx",
+  resume: "/Osei_Acquah_Resume.pdf",
 };
 
 export const education = {
@@ -97,7 +97,7 @@ export const projects = [
     name: "PathSense",
     tagline: "AI accessibility navigation · Best Use of Live API, Top 10 of 48+",
     description:
-      "An AI-powered accessible navigation web app built in a single hackathon sprint with a 4-person team. Gemini 2.5 Flash Vision processes live camera input to generate real-time scene descriptions and obstacle alerts, with GPS navigation and crowdsourced accessibility reporting via Firebase Realtime Database.",
+      "AI-powered accessible navigation web app using Gemini Vision for real-time scene description, live GPS, and crowdsourced accessibility reporting.",
     stack: [
       "React",
       "TypeScript",
@@ -121,7 +121,7 @@ export const projects = [
     name: "Container Design Optimization",
     tagline: "Numerical optimization app · 100% test coverage",
     description:
-      "An optimization application using Lagrange multipliers and numerical methods to compute maximum container volumes under fixed surface-area constraints, translating mathematical requirements into practical software. Backed by pytest unit and integration suites covering optimization logic, constraint handling, and edge cases at 100% code coverage.",
+      "Optimization app using Lagrange multipliers and numerical methods to maximize container volume under fixed surface-area constraints, with 100% pytest coverage.",
     stack: ["Python", "NumPy", "SciPy", "pytest", "Streamlit"],
     links: {
       live: "https://container-optimization-project-wzg6za6grqwqimo8ekq9n2.streamlit.app/" as string | null,
@@ -138,7 +138,7 @@ export const projects = [
     name: "Bible & Devotion App",
     tagline: "Duolingo-inspired Scripture learning · iOS & Android",
     description:
-      "A Duolingo-inspired mobile learning platform with 60+ structured lessons, prerequisite-based unlocking, and cross-device progress tracking. Offline-first React Native frontend backed by Firebase Firestore, with multi-provider authentication (Google, Apple, email) and Gemini AI for conversational Bible study, personalized devotion generation, and cached AI audio for low-latency responses.",
+      "Duolingo-inspired mobile learning platform with 60+ lessons, offline-first sync, and Gemini AI for conversational Bible study and personalized devotions.",
     stack: ["React Native", "Firebase", "Firebase Auth", "Gemini API"],
     links: {
       live: null as string | null,

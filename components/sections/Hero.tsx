@@ -20,36 +20,41 @@ export function Hero() {
           <span>{siteConfig.location}</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 mb-6">
           <Button href="#projects" iconRight={<ArrowRight size={16} aria-hidden />}>
             View Projects
           </Button>
           <Button href={siteConfig.resume} variant="secondary" icon={<Download size={15} aria-hidden />}>
             Resume
           </Button>
-          <Button
+        </div>
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          <a
             href={siteConfig.social.github}
-            variant="outline"
-            external
-            icon={<Github size={15} aria-hidden />}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
           >
+            <Github size={14} aria-hidden />
             GitHub
-          </Button>
-          <Button
+          </a>
+          <a
             href={siteConfig.social.linkedin}
-            variant="outline"
-            external
-            icon={<Linkedin size={15} aria-hidden />}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
           >
+            <Linkedin size={14} aria-hidden />
             LinkedIn
-          </Button>
-          <Button
+          </a>
+          <a
             href={`mailto:${siteConfig.email}`}
-            variant="outline"
-            icon={<Mail size={15} aria-hidden />}
+            className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
           >
+            <Mail size={14} aria-hidden />
             Email
-          </Button>
+          </a>
         </div>
       </div>
     </section>
